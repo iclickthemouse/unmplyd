@@ -1,10 +1,8 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Job Search HQ</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<title>Application Workspace</title>
+<style>@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono-Regular.ttf')}@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono-Bold.ttf');font-weight:700}</style>
 <style>
 [hidden]{display:none !important}
 /* Layout: one reading column on paper, a hairline-grid masthead, résumés first, then the working lists. */
@@ -203,38 +201,35 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 /* ===================== unmplyd · configuration =====================
    Edit this block to make the page yours. Everything else reads from it. */
 window.HQ_CONFIG = Object.assign({
-  appName: "Job Search HQ",
-  owner: "Your Name",                       // used on the masthead, PDFs and Claude prompts
-  email: "you@example.com",                 // shown with a copy button
+  appName: "Application Workspace",
+  owner: "",                                // optional display name; résumé content owns PDF identity
+  email: "",                 // shown with a copy button
   quickLinks: [                             // buttons in the masthead (https only)
     { label: "Portfolio", url: "https://example.com" },
     { label: "LinkedIn", url: "https://www.linkedin.com/" }
   ],
   tracks: [                                 // résumé / search tracks; "Both" is added automatically
-    { id: "L&D", label: "L&D" },
-    { id: "Creative", label: "Creative Director" }
+    { id: "general", label: "General" }
   ],
   resumes: {                                // one editor tab per résumé; data lives in db docs resumes/<key>
-    ld: { label: "L&D", track: "L&D", file: "Resume_Learning.pdf" },
-    cd: { label: "Creative Director", track: "Creative", file: "Resume_Creative_Director.pdf" }
+    base: { label: "Base résumé", track: "general", file: "Resume_Base.pdf" },
+    tailored: { label: "Working copy", track: "general", file: "Resume_Tailored.pdf" }
   },
-  retiredClaims: [],                        // phrases Claude must never add back, e.g. "tripled revenue"
-  fontUrls: {                               // JetBrains Mono for PDF export. In a Claude artifact, upload the
-    regular: "fonts/JetBrainsMono-Regular.ttf",   // two TTFs as assets and use their "/_blob/<id>" URLs here.
+  retiredClaims: [],                        // claims an assistant must never add back
+  fontUrls: {                               // local fonts for PDF export; alternate URLs are supported
+    regular: "fonts/JetBrainsMono-Regular.ttf",   // regular face
     bold: "fonts/JetBrainsMono-Bold.ttf"          // If they can't load, PDFs fall back to Courier.
   },
   seedUrl: "examples/seed.json"             // standalone mode only: loaded once into browser storage
 }, window.HQ_CONFIG || {});
 
-/* ===================== runtime: Claude artifact or standalone =====================
-   Inside a Claude artifact, capabilities come from window.claude.use(). Opened anywhere
-   else, a small localStorage-backed stand-in keeps the page fully usable (no Claude edits,
-   no file drawer). */
+/* Local storage by default. Optional host capabilities are supplied through
+   window.HQ_ADAPTERS: db, user, assets, downloads, ai. No provider SDK is required. */
 (function(){
   const C = window.HQ_CONFIG, KEY = "unmplyd:";
-  const isArtifact = () => !!(window.claude && typeof window.claude.use === "function");
+  const adapters = () => window.HQ_ADAPTERS || {};
   const lsGet = (k) => { try { return JSON.parse(localStorage.getItem(KEY + k) || "null"); } catch(e){ return null; } };
-  const lsSet = (k, v) => { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch(e){} };
+  const lsSet = (k, v) => { localStorage.setItem(KEY + k, JSON.stringify(v)); };
   const docL = new Map(), colL = new Map(); const rid = () => Math.random().toString(36).slice(2, 12);
   const load = (col) => lsGet("c:" + col) || {}; const store = (col, o) => lsSet("c:" + col, o);
   const meta = { fromCache: false, hasPendingWrites: false };
@@ -275,9 +270,10 @@ window.HQ_CONFIG = Object.assign({
   async function seed(){
     if(lsGet("seeded")) return;
     try {
+      if(!C.seedUrl){ lsSet("seeded", true); return; }
       const r = await fetch(C.seedUrl); if(!r.ok) throw 0; const data = await r.json();
-      for(const [col, docs] of Object.entries(data)) store(col, Object.assign(load(col), docs));
-    } catch(e){}
+      for(const [col, docs] of Object.entries(data)) store(col, Object.assign({}, docs, load(col)));
+    } catch(e){ console.warn("Example data could not load; reload to retry."); return; }
     lsSet("seeded", true);
   }
   const local = {
@@ -285,9 +281,13 @@ window.HQ_CONFIG = Object.assign({
     user: async () => ({ can: async () => true, canEdit: () => true, isOwner: () => true, id: async () => "local" }),
     downloads: async () => ({ save: async ({ filename, data }) => { const blob = data instanceof Blob ? data : new Blob([data]); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); return { saved: true }; } })
   };
-  // Checked at call time, not load time, so a viewer that injects window.claude late is still detected.
-  Object.defineProperty(window, "HQ_MODE", { get: () => isArtifact() ? "artifact" : "standalone" });
-  window.HQ_USE = (name) => isArtifact() ? window.claude.use(name).catch(() => null) : (local[name] ? local[name]() : Promise.resolve(null));
+  Object.defineProperty(window, "HQ_MODE", { get: () => adapters().db ? "connected" : "standalone" });
+  window.HQ_USE = async (name) => {
+    const a = adapters();
+    // A connected database must use its host's permissions and file/download capabilities.
+    if(a.db || Object.prototype.hasOwnProperty.call(a, name)) return a[name] || null;
+    return local[name] ? local[name]() : null;
+  };
 })();
 </script>
 <header class="mast">
@@ -295,7 +295,7 @@ window.HQ_CONFIG = Object.assign({
     <div class="mast-top">
       <div>
         <p class="eyebrow" style="margin:0 0 10px" id="mastOwner">Home base</p>
-        <h1><span id="mastName">JOB SEARCH HQ</span><span class="bar"></span></h1>
+        <h1><span id="mastName">APPLICATION WORKSPACE</span><span class="bar"></span></h1>
       </div>
       <div class="quick" id="quick"></div>
     </div>
@@ -318,7 +318,7 @@ window.HQ_CONFIG = Object.assign({
   <div class="wrap">
 
     <section id="resumes" aria-labelledby="h-res">
-      <div class="sec-head"><h2 id="h-res">Send-ready résumés</h2><p>The one file to send for each track. Older versions are folded underneath.</p></div>
+      <div class="sec-head"><h2 id="h-res">Send-ready résumés</h2><p>Keep a base résumé, tailor a working copy, then save a packet for each role.</p></div>
       <div class="resumes" id="resumeCards"><div class="empty">Your current résumés will appear here.</div></div>
       <details class="older" id="olderBox"><summary>Older versions &amp; drafts (<span id="olderCount">0</span>)</summary><div class="list" id="olderList" style="border:0"></div></details>
     </section>
@@ -331,26 +331,29 @@ window.HQ_CONFIG = Object.assign({
       </div>
       <div class="edbar">
         <span id="edStatus" role="status"></span>
-        <button class="btn" type="button" id="askBtn" data-edit-only>Ask Claude to edit</button>
+        <button class="btn" type="button" id="askBtn" data-edit-only>Edit with AI</button>
         <button class="btn" type="button" id="histBtn">History</button>
         <button class="btn primary" type="button" id="pdfBtn">Download PDF</button>
         <button class="btn" type="button" id="pdfDrawer" data-edit-only>Save PDF to files</button>
       </div>
       <div class="panel" id="askPanel" hidden>
-        <label for="askText" class="eyebrow">What should Claude change?</label>
+        <label for="askText" class="eyebrow">What should change?</label>
         <textarea id="askText" placeholder="e.g. Tighten the bullets in my current role and lead with the biggest result"></textarea>
         <div class="chips" id="askChips" role="group" aria-label="Quick requests">
           <button class="btn" type="button" data-chip="tighten">Tighten bullets</button>
           <button class="btn" type="button" data-chip="verbs">Stronger verbs</button>
-          <button class="btn" type="button" data-chip="systems">Emphasize systems</button>
-          <button class="btn" type="button" data-chip="ai">Emphasize AI enablement</button>
+          <button class="btn" type="button" data-chip="impact">Emphasize relevant experience</button>
           <button class="btn" type="button" data-chip="tailor">Tailor to a posting</button>
         </div>
         <details id="postBox"><summary>Paste a job posting to tailor to (optional)</summary>
           <label for="askPosting" class="eyebrow" style="position:absolute;left:-9999px">Job posting</label>
           <textarea id="askPosting" placeholder="Paste the job description here"></textarea>
         </details>
-        <div class="edbar"><button class="btn primary" type="button" id="askRun">Ask Claude</button><button class="btn" type="button" id="askStop" hidden>Stop</button></div>
+        <p class="muted">Copy the prompt into any AI assistant, then paste its JSON reply below. Review the diff before applying.</p>
+        <div class="edbar"><button class="btn" type="button" id="askCopy">Copy prompt</button><button class="btn primary" type="button" id="askRun">Run connected AI</button><button class="btn" type="button" id="askStop" hidden>Stop</button></div>
+        <label for="askPrompt" class="eyebrow">Prompt to copy</label><textarea id="askPrompt" readonly></textarea>
+        <label for="askReply" class="eyebrow">AI reply (résumé JSON)</label><textarea id="askReply" placeholder="Paste the complete JSON reply"></textarea>
+        <button class="btn" type="button" id="askReview">Review pasted reply</button>
         <p id="askOut" aria-live="polite"></p>
         <div id="askResult" hidden style="display:grid;gap:8px">
           <div id="askDiff"></div>
@@ -367,7 +370,7 @@ window.HQ_CONFIG = Object.assign({
       </div>
       <div id="pvBar" hidden><span id="pvText"></span><span class="edbar"><button class="btn" type="button" id="pvRestore" data-edit-only>Restore this version</button><button class="btn" type="button" id="pvBack">Back to current</button></span></div>
       <div class="paperwrap"><div class="paper" id="paper"></div></div>
-      <p class="muted" style="margin:0;font-size:12px">Click any text to edit it. Enter adds a bullet; Backspace on an empty bullet removes it. Edits save as you type, and Save version keeps a copy in History. The PDF is a clean text version that applicant-tracking systems read correctly.</p>
+      <p class="muted" style="margin:0;font-size:12px">Click any text to edit it. Enter adds a bullet; Backspace on an empty bullet removes it. Edits save as you type, and Save version keeps a copy in History. PDFs contain selectable text; check the exported layout before submitting.</p>
     </section>
 
     <section id="attention" aria-labelledby="h-att">
@@ -393,7 +396,7 @@ window.HQ_CONFIG = Object.assign({
           <tbody id="appBody"><tr><td colspan="7" class="muted">Applications you track will appear here.</td></tr></tbody>
         </table>
       </div>
-      <div id="appEditor"></div>
+      <div id="appEditor"></div><div class="panel" id="packetPanel" hidden></div>
       <div data-write><button class="btn" type="button" id="addApp">+ Add application or lead</button></div>
     </section>
 
@@ -465,10 +468,10 @@ window.HQ_CONFIG = Object.assign({
   function chip(text, tone){ return el("span", {class: "chip" + (tone ? " " + tone : "")}, text); }
   function statusChip(s){ if(!s) return null; return chip(s, STATUS_CHIP[String(s).toLowerCase()] ?? ""); }
   const CFG = window.HQ_CONFIG;
-  const TRACKS = Object.fromEntries(CFG.tracks.map(t => [t.id, t.label]).concat([["Both", "Both tracks"]]));
+  const TRACKS = Object.fromEntries(CFG.tracks.map(t => [t.id, t.label]).concat([["Both", "All tracks"]]));
   const TRACK_IDS = CFG.tracks.map(t => t.id).concat("Both");
   // masthead + filters from config
-  $("mastOwner").textContent = CFG.owner + " · home base";
+  $("mastOwner").textContent = CFG.owner ? CFG.owner + " · home base" : "Your application workspace";
   $("mastName").textContent = String(CFG.appName).toUpperCase();
   document.title = CFG.appName;
   $("quick").replaceChildren(...CFG.quickLinks.filter(q => safeUrl(q.url)).map(q => el("a", {class: "btn", href: q.url, target: "_blank", rel: "noopener"}, q.label + " ↗")),
@@ -495,7 +498,7 @@ window.HQ_CONFIG = Object.assign({
     for(const fd of fields){
       const id = "ed-" + fd.k + "-" + Math.random().toString(36).slice(2, 7);
       let input;
-      if(fd.type === "select"){ input = el("select", {id}); for(const o of fd.options){ const op = el("option", {value: o}, o); if((values[fd.k] ?? fd.def) === o) op.selected = true; input.append(op); } }
+      if(fd.type === "select"){ input = el("select", {id}); for(const o of fd.options){ const value = typeof o === "object" ? o.value : o; const op = el("option", {value}, typeof o === "object" ? o.label : o); if((values[fd.k] ?? fd.def) === value) op.selected = true; input.append(op); } }
       else if(fd.type === "textarea"){ input = el("textarea", {id}); input.value = values[fd.k] ?? ""; }
       else { input = el("input", {id, type: fd.type || "text", placeholder: fd.ph || ""}); input.value = values[fd.k] ?? ""; }
       input.dataset.k = fd.k;
@@ -519,17 +522,18 @@ window.HQ_CONFIG = Object.assign({
     {k:"date", label:"Date", type:"date"},
     {k:"url", label:"Main link (https://…)", ph:"https://", wide:true},
     {k:"links", label:"More links: one per line, Label | https://…", type:"textarea", wide:true},
+    {k:"text", label:"Letter / draft text", type:"textarea", wide:true},
     {k:"note", label:"Note", type:"textarea", wide:true},
     {k:"flags", label:"Flags: one per line", type:"textarea", wide:true}
   ];
-  function matToForm(m){ return { kind:m.kind, track:m.track, title:m.title, subtitle:m.subtitle, status:m.status, date:m.date, url:(m.primary && m.primary.url) || "", links:(m.links || []).map(l => l.label + " | " + l.url).join("\n"), note:m.note || "", flags:(m.flags || []).join("\n") }; }
+  function matToForm(m){ return { kind:m.kind, track:m.track, title:m.title, subtitle:m.subtitle, status:m.status, date:m.date, url:(m.primary && m.primary.url) || "", links:(m.links || []).map(l => l.label + " | " + l.url).join("\n"), text:m.text || "", note:m.note || "", flags:(m.flags || []).join("\n") }; }
   function formToMat(v, prev){
     const links = (v.links || "").split("\n").map(s => s.trim()).filter(Boolean).map(s => { const i = s.lastIndexOf("|"); return i > 0 ? {label: s.slice(0, i).trim(), url: s.slice(i + 1).trim()} : {label: "Open", url: s}; }).filter(l => safeUrl(l.url));
-    const out = { kind:v.kind, track:v.track, title:v.title || "Untitled", subtitle:v.subtitle || "", status:v.status, date:v.date || TODAY(), links, note:v.note || "", flags:(v.flags || "").split("\n").map(s => s.trim()).filter(Boolean) };
+    const out = Object.assign({}, prev || {}, { kind:v.kind, track:v.track, title:v.title || "Untitled", subtitle:v.subtitle || "", status:v.status, date:v.date || TODAY(), links, note:v.note || "", text:v.text || "", flags:(v.flags || "").split("\n").map(s => s.trim()).filter(Boolean) });
+    delete out.id;
     out.primary = safeUrl(v.url) ? {label: (prev && prev.primary && prev.primary.label) || "Open", url: v.url} : null;
     if(prev && typeof prev.order === "number") out.order = prev.order;
     if(prev && prev.assetId) out.assetId = prev.assetId;
-    if(prev && prev.text) out.text = prev.text;
     return out;
   }
   function openMatEditor(m, host){
@@ -580,7 +584,7 @@ window.HQ_CONFIG = Object.assign({
     // letters
     const letters = mats.filter(m => m.kind === "letter").sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
     $("st-letters").textContent = letters.length;
-    $("letterList").replaceChildren(...(letters.length ? letters.map(m => itemRow(m)) : [el("div", {class: "empty", style: "border:0"}, "No cover letters logged yet.")]));
+    $("letterList").replaceChildren(...(letters.length ? letters.map(m => el("div", null, itemRow(m), m.text ? el("details", {class:"copyblock"}, el("summary", null, "Letter text"), el("pre", null, m.text), el("button", {class:"btn", type:"button", onclick:(e) => copyText(m.text, e.currentTarget)}, "Copy letter")) : null)) : [el("div", {class: "empty", style: "border:0"}, "No cover letters logged yet.")]));
     // sites
     const sites = mats.filter(m => m.kind === "site");
     $("siteList").replaceChildren(...(sites.length ? sites.map(m => itemRow(m, {showTrack: true})) : [el("div", {class: "empty", style: "border:0"}, "No sites logged yet.")]));
@@ -646,13 +650,18 @@ window.HQ_CONFIG = Object.assign({
     {k:"applied", label:"Applied on", type:"date"}, {k:"last", label:"Last activity", type:"date"},
     {k:"next", label:"Next step", wide:true},
     {k:"link", label:"Link (posting, email thread)", ph:"https://", wide:true},
+    {k:"jobPosting", label:"Job description", type:"textarea", wide:true},
+    {k:"resumeId", label:"Résumé to capture in the packet", type:"select", options:[{value:"",label:"None"}, ...Object.entries(CFG.resumes).map(([value,r]) => ({value,label:r.label}))], def:""},
+    {k:"resumeUrl", label:"Exact résumé file link (https://…)", wide:true},
+    {k:"coverLetter", label:"Cover letter draft", type:"textarea", wide:true},
+    {k:"coverLetterUrl", label:"Exact cover letter file link (https://…)", wide:true},
     {k:"note", label:"Note", type:"textarea", wide:true}
   ];
   function openAppEditor(a){
     S.editingApp = a ? a.id : "new";
     const host = $("appEditor");
     host.replaceChildren(editor(APP_FIELDS, a || {track:TRACK_IDS[0], status:"Applied", applied: TODAY(), last: TODAY()},
-      async (v) => { const body = Object.assign({}, v, {order: a && typeof a.order === "number" ? a.order : 50}); if(!safeUrl(body.link)) body.link = ""; const ok = await write(() => a ? S.db.collection("applications").doc(a.id).set(body) : S.db.collection("applications").add(body), "Saved"); if(ok){ S.editingApp = null; host.replaceChildren(); renderApps(); } },
+      async (v) => { const body = Object.assign({}, a || {}, v, {order: a && typeof a.order === "number" ? a.order : 50}); delete body.id; for(const k of ["link","resumeUrl","coverLetterUrl"]) if(!safeUrl(body[k])) body[k] = ""; const ok = await write(() => a ? S.db.collection("applications").doc(a.id).set(body) : S.db.collection("applications").add(body), "Saved"); if(ok){ S.editingApp = null; host.replaceChildren(); renderApps(); } },
       a ? async () => { const ok = await write(() => S.db.collection("applications").doc(a.id).delete(), "Deleted"); if(ok){ S.editingApp = null; host.replaceChildren(); } } : null,
       () => { S.editingApp = null; host.replaceChildren(); }));
     host.scrollIntoView({block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
@@ -675,13 +684,64 @@ window.HQ_CONFIG = Object.assign({
       return el("tr", {class: a.status === "Closed" ? "closed" : null},
         el("td", {class: "co"}, a.company || "", a.note ? el("div", {class: "muted", style: "font-weight:400;font-size:12px;max-width:260px"}, a.note) : null),
         el("td", null, a.role || ""),
-        el("td", null, el("span", {class: "track"}, a.track === "Creative" ? "Creative" : (a.track || ""))),
+        el("td", null, el("span", {class: "track"}, TRACKS[a.track] || a.track || "")),
         el("td", null, el("div", {style: "display:grid;gap:4px;justify-items:start"}, chip(a.status || "", APP_TONE[a.status] || ""), sel)),
         el("td", {class: "num"}, fmtDate(a.applied) || "–", a.last && a.last !== a.applied ? el("div", {class: "muted", style: "font-size:11.5px"}, "last " + fmtDate(a.last)) : null),
         el("td", {style: "max-width:240px"}, a.next || ""),
-        el("td", {style: "white-space:nowrap"}, a.link ? link("Open", a.link, "btn ghost") : null, S.canWrite ? el("button", {class: "btn ghost", type: "button", onclick: () => openAppEditor(a)}, "Edit") : null)
+        el("td", {style: "white-space:nowrap"}, a.link ? link("Open", a.link, "btn ghost") : null, S.canWrite ? el("button", {class: "btn ghost", type: "button", onclick: () => openAppEditor(a)}, "Edit") : null, el("button", {class:"btn ghost", type:"button", onclick:() => showPackets(a)}, "Packets"), S.canWrite ? el("button", {class:"btn ghost", type:"button", onclick:() => savePacket(a)}, "Save packet") : null)
       );
     }));
+  }
+
+  // Packets are immutable snapshots: later résumé/letter edits cannot change what was captured.
+  async function savePacket(a){
+    try { await window.HQ_FLUSH?.(); } catch(e){ toast(e.message); return; }
+    const current = (await S.db.doc("applications/" + a.id).get()).data();
+    let resume = null;
+    if(current.resumeId){
+      const snap = await S.db.doc("resumes/" + current.resumeId).get();
+      if(!snap.exists){ toast("Choose an available résumé in Edit first"); return; }
+      resume = snap.data().data;
+    }
+    const packet = {at:new Date().toISOString(), applicationId:a.id, company:current.company, role:current.role,
+      status:current.status, jobPosting:current.jobPosting || "", resumeId:current.resumeId || "", resume,
+      resumeUrl:current.resumeUrl || "", coverLetter:current.coverLetter || "", coverLetterUrl:current.coverLetterUrl || ""};
+    if(!resume && !packet.resumeUrl && !packet.coverLetter && !packet.coverLetterUrl){ toast("Add a résumé or cover letter in Edit first"); return; }
+    if(await write(async () => {
+      const ref = await S.db.collection("applications/" + a.id + "/versions").add(packet);
+      await S.db.doc("applications/" + a.id).update({packetId:ref.id});
+    }, "Packet saved; earlier packets are preserved")) showPackets(a);
+  }
+  async function showPackets(a){
+    const panel = $("packetPanel"); panel.hidden = false;
+    panel.replaceChildren(el("h3", null, "Packets · " + a.company + " · " + a.role), el("p", null, "Loading…"));
+    try {
+      const snaps = await S.db.collection("applications/" + a.id + "/versions").orderBy("at","desc").get();
+      panel.replaceChildren(el("h3", null, "Packets · " + a.company + " · " + a.role),
+        el("p", {class:"muted"}, "Saved snapshots stay unchanged. External file links may change; retain the submitted files separately."),
+        ...snaps.docs.map(doc => { const p = doc.data(); return el("details", {class:"copyblock"},
+          el("summary", null, new Date(p.at).toLocaleString() + " · " + p.status),
+          p.resumeUrl ? link("Résumé file",p.resumeUrl) : null, p.coverLetterUrl ? link("Letter file",p.coverLetterUrl) : null,
+          p.resume ? el("details", null, el("summary", null, "Résumé snapshot"), el("pre", {style:"white-space:pre-wrap;overflow-wrap:anywhere"}, resumeText(p.resume))) : null,
+          p.coverLetter ? el("details", null, el("summary", null, "Cover letter snapshot"), el("pre", {style:"white-space:pre-wrap;overflow-wrap:anywhere"}, p.coverLetter)) : null,
+          el("button", {class:"btn", type:"button", onclick:async () => {
+            const downloads = await window.HQ_USE("downloads");
+            if(!downloads){ toast("Downloads are unavailable in this view"); return; }
+            await downloads.save({filename:a.id + "-" + doc.id + ".json",data:JSON.stringify(p,null,2)});
+          }}, "Download packet")); }),
+        snaps.empty ? el("p", null, "No packets saved. Edit this application, choose its résumé, add the letter, then Save packet.") : "",
+        el("button", {class:"btn", type:"button", onclick:() => {panel.hidden=true;}}, "Close"));
+    } catch(e){ panel.replaceChildren(el("p", null, "Couldn't load packets. Try again.")); }
+  }
+
+  function resumeText(d){
+    const lines = [];
+    function visit(v, key){
+      if(typeof v === "string"){ if(v && key !== "type") lines.push(v); }
+      else if(Array.isArray(v)) v.forEach(x => visit(x));
+      else if(v && typeof v === "object") Object.entries(v).forEach(([k,x]) => visit(x,k));
+    }
+    visit(d); return lines.join("\n");
   }
 
   // ---------- links editor ----------
@@ -715,11 +775,11 @@ window.HQ_CONFIG = Object.assign({
   const timer = setTimeout(() => { if(!S.got.materials) $("syncnote").textContent = "Can't reach your saved data yet. It will appear when the connection returns."; }, 10000);
   (async () => {
     const [db, user, assets] = await Promise.all([window.HQ_USE("db"), window.HQ_USE("user"), window.HQ_USE("assets")]);
-    if(!db){ clearTimeout(timer); $("syncnote").textContent = "Sign in to claude.ai to see your saved data."; S.canWrite = false; applyWriteGate(); return; }
+    if(!db){ clearTimeout(timer); $("syncnote").textContent = "Your storage connection is unavailable."; S.canWrite = false; applyWriteGate(); return; }
     S.db = db; S.assets = assets;
-    try { const c = user ? await user.can("data.write") : null; if(c === false) S.canWrite = false; } catch(e){}
+    try { S.canWrite = !!user && await user.can("data.write") === true; } catch(e){ S.canWrite = false; }
     applyWriteGate();
-    if(assets && S.canWrite){ dz.hidden = false; } else { $("dropNote").hidden = false; $("dropNote").textContent = window.HQ_MODE === "standalone" ? "The file drawer works when this page runs as a Claude artifact." : "Open this page as its owner to add files."; }
+    if(assets && S.canWrite){ dz.hidden = false; } else { $("dropNote").hidden = false; $("dropNote").textContent = window.HQ_MODE === "standalone" ? "File uploads require a connected storage adapter. You can keep file links under Where things live." : "Open this page as its owner to add files."; }
     const watch = (name, cb) => db.collection(name).onSnapshot((snap) => {
       S[name] = snap.docs.map(d => Object.assign({id: d.id}, d.data()));
       S.got[name] = true;
@@ -742,7 +802,7 @@ window.HQ_CONFIG = Object.assign({
   const RES = CFG.resumes, IDS = Object.keys(RES);
   const OWNER = CFG.owner || "Your Name";
   const RETIRED = (CFG.retiredClaims || []).filter(Boolean);
-  const E = { id: IDS[0], data: Object.fromEntries(IDS.map(k => [k, null])), got: {}, last: {}, remote: {}, db: null, sample: null, downloads: null, assets: null, canWrite: true, chain: Promise.resolve(), timer: null, ctl: null, proposal: null, preview: null, fonts: null };
+  const E = { id: IDS[0], data: Object.fromEntries(IDS.map(k => [k, null])), got: {}, last: {}, remote: {}, db: null, ai: null, downloads: null, assets: null, canWrite: true, chain: Promise.resolve(), timer: null, ctl: null, proposal: null, preview: null, fonts: null };
   const $ = (id) => document.getElementById(id);
   function el(tag, attrs, ...kids){
     const n = document.createElement(tag);
@@ -838,6 +898,10 @@ window.HQ_CONFIG = Object.assign({
       .catch((err) => { E.last[id] = null; status(err && err.code === "quota_exceeded" ? "Storage is full, so this edit wasn't saved" : "Couldn't save. Your edits are still on screen; keep typing to retry"); });
     return E.chain;
   }
+  window.HQ_FLUSH = async () => {
+    await save(); await E.chain;
+    if(IDS.some(id => E.data[id] && E.last[id] !== JSON.stringify(E.data[id]))) throw new Error("A résumé has unsaved changes. Return to that copy and save before capturing a packet.");
+  };
   function focusPath(path, atEnd){
     const key = JSON.stringify(path);
     const n = [...$("paper").querySelectorAll("[data-path]")].find(x => x.dataset.path === key);
@@ -914,8 +978,8 @@ window.HQ_CONFIG = Object.assign({
   $("pvBack").addEventListener("click", () => { E.preview = null; render(); });
   $("pvRestore").addEventListener("click", () => { if(E.preview) restore(E.preview); });
 
-  // ---------- Ask Claude ----------
-  const CHIPS = { tighten: "Tighten every bullet so each fits on one or two lines, without losing any facts or numbers.", verbs: "Use stronger, more specific verbs at the start of each bullet.", systems: "Bring systems integration and people-systems work forward where it's already true.", ai: "Bring AI enablement forward where it's already true, without overstating it.", tailor: "Tailor the summary and bullets to the job posting below. Reorder and reword for fit; don't add anything that isn't already true." };
+  // ---------- Provider-neutral AI editing ----------
+  const CHIPS = { tighten: "Tighten every bullet so each fits on one or two lines, without losing any facts or numbers.", verbs: "Use stronger, more specific verbs at the start of each bullet.", impact: "Emphasize experience relevant to the target role using only supported facts.", tailor: "Tailor the summary and bullets to the job posting below. Reorder and reword for fit; don't add anything that isn't already true." };
   $("askChips").addEventListener("click", (e) => { const b = e.target.closest("button[data-chip]"); if(!b) return; $("askText").value = CHIPS[b.dataset.chip]; if(b.dataset.chip === "tailor") $("postBox").open = true; $("askText").focus(); });
   $("askBtn").addEventListener("click", () => { const p = $("askPanel"); p.hidden = !p.hidden; if(!p.hidden) $("askText").focus(); });
   function closeAsk(keepOpen){ E.proposal = null; $("askDiff").replaceChildren(); $("askResult").hidden = true; $("askOut").textContent = ""; if(!keepOpen) $("askPanel").hidden = true; }
@@ -953,21 +1017,55 @@ window.HQ_CONFIG = Object.assign({
     }
     return parts.join(" · ");
   }
-  $("askRun").addEventListener("click", async () => {
-    const request = $("askText").value.trim(); const posting = $("askPosting").value.trim();
-    if(!request){ toast("Say what you'd like changed first"); return; }
-    if(!E.sample){ toast("Claude isn't available on this page right now"); return; }
-    const d = E.data[E.id]; if(!d) return;
-    E.ctl = new AbortController(); $("askRun").disabled = true; $("askStop").hidden = false; $("askResult").hidden = true; $("askOut").textContent = "Claude is editing your " + RES[E.id].label + " résumé…";
+  function validateResume(d){
+    const str = v => typeof v === "string";
+    const optional = v => v === undefined || str(v);
+    const bullets = v => v === undefined || (Array.isArray(v) && v.every(str));
+    if(!d || !str(d.name) || !str(d.title) || !str(d.contact) || !optional(d.summary) || !Array.isArray(d.sections)) return false;
+    return d.sections.every(s => s && str(s.heading) && (
+      s.type === "experience" ? Array.isArray(s.entries) && s.entries.every(e => e && str(e.company) && optional(e.note) && optional(e.dates) && bullets(e.bullets) && optional(e.clientsHeading) &&
+        (e.roles === undefined || (Array.isArray(e.roles) && e.roles.every(r => r && str(r.title) && optional(r.dates) && bullets(r.bullets)))) &&
+        (e.clients === undefined || (Array.isArray(e.clients) && e.clients.every(c => c && str(c.name) && optional(c.desc) && bullets(c.bullets))))) :
+      s.type === "groups" ? Array.isArray(s.groups) && s.groups.every(g => g && str(g.label) && str(g.text)) :
+      s.type === "lines" ? Array.isArray(s.lines) && s.lines.every(l => l && str(l.bold) && str(l.text)) : false));
+  }
+  function propose(res, context){
+    if(!validateResume(res)) throw new Error("Reply must be complete résumé JSON with valid sections, entries and text fields.");
+    if(context.id !== E.id || context.base !== JSON.stringify(E.data[E.id])) throw new Error("The résumé changed. Copy a fresh prompt before reviewing this reply.");
+    E.proposal = {...context, data:res}; showDiff(E.data[E.id],res);
+  }
+  let copiedContext = null;
+  $("askCopy").addEventListener("click", async () => {
+    if(!E.data[E.id]) return;
+    const request = $("askText").value.trim() || "Tailor this résumé to the target role using only existing facts.";
+    copiedContext = {id:E.id, base:JSON.stringify(E.data[E.id]), request};
+    const text = prompt(E.data[E.id],request,$("askPosting").value.trim());
+    $("askPrompt").value = text;
+    try { await navigator.clipboard.writeText(text); toast("Prompt copied"); }
+    catch(e){ $("askPrompt").focus(); $("askPrompt").select(); toast("Press Ctrl/Cmd+C to copy the selected prompt"); }
+  });
+  $("askReview").addEventListener("click", () => {
+    E.proposal = null; $("askResult").hidden = true;
     try {
-      const res = await E.sample.json(prompt(d, request, posting), { signal: E.ctl.signal, cache: false, modelTier: "default" });
-      if(!res || typeof res !== "object" || typeof res.name !== "string" || !Array.isArray(res.sections) || !res.sections.length) throw { code: "bad_shape" };
-      E.proposal = { id: E.id, data: res, request };
-      showDiff(d, res);
-    } catch(err){
-      const c = err && err.code;
-      $("askOut").textContent = c === "not_granted" ? "Claude isn't available on this page right now." : c === "rate_limited" ? "Too many requests just now. Wait a minute, then try again." : (E.ctl && E.ctl.signal.aborted) ? "Stopped." : "Claude couldn't finish this edit. Try rewording the request.";
-    } finally { $("askRun").disabled = false; $("askStop").hidden = true; E.ctl = null; }
+      if(!copiedContext) throw new Error("Copy a prompt first so this reply is tied to the right résumé version.");
+      const raw = $("askReply").value.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+      propose(JSON.parse(raw),copiedContext);
+    } catch(e){ $("askOut").textContent = e.message; }
+  });
+  $("askRun").addEventListener("click", async () => {
+    const request = $("askText").value.trim(), posting = $("askPosting").value.trim();
+    if(!request || !E.data[E.id]){ toast("Describe the change first"); return; }
+    if(!E.ai){ toast("Copy the prompt to use your preferred assistant"); return; }
+    const context = {id:E.id, base:JSON.stringify(E.data[E.id]), request};
+    const ctl = new AbortController(); E.ctl = ctl;
+    E.proposal = null; $("askRun").disabled = true; $("askStop").hidden = false; $("askResult").hidden = true;
+    $("askOut").textContent = "Preparing proposed edits…";
+    try {
+      const res = await E.ai.edit({prompt:prompt(E.data[E.id], request, posting), signal:ctl.signal});
+      if(ctl.signal.aborted) return;
+      propose(typeof res === "string" ? JSON.parse(res) : res,context);
+    } catch(err){ $("askOut").textContent = ctl.signal.aborted ? "Stopped." : "Couldn't review the edit: " + err.message; }
+    finally { $("askRun").disabled = false; $("askStop").hidden = true; if(E.ctl === ctl) E.ctl = null; }
   });
   $("askStop").addEventListener("click", () => { if(E.ctl) E.ctl.abort(); });
   function showDiff(a, b){
@@ -978,17 +1076,22 @@ window.HQ_CONFIG = Object.assign({
       rows.push({ path: (y || x).p, old: x ? x.v : "", neu: y ? y.v : "" });
     }
     const flat = JSON.stringify(b).toLowerCase(); const flagged = RETIRED.some(r => flat.includes(String(r).toLowerCase()));
-    $("askOut").textContent = rows.length ? rows.length + (rows.length === 1 ? " change" : " changes") + " proposed. Nothing is applied until you say so." : "Claude didn't change anything. Try a more specific request.";
+    $("askOut").textContent = rows.length ? rows.length + (rows.length === 1 ? " change" : " changes") + " proposed. Nothing is applied until you say so." : "No changes proposed. Try a more specific request.";
     $("askDiff").replaceChildren(
-      flagged ? el("p", { class: "chip bad", style: "display:block;white-space:normal" }, "Heads up: this version contains a claim you retired. Check before applying.") : null,
+      flagged ? el("p", { class: "chip bad", style: "display:block;white-space:normal" }, "Heads up: this version contains a claim you retired. Check before applying.") : "",
       ...rows.slice(0, 60).map(r => el("div", { class: "diffrow" }, el("div", { class: "eyebrow", style: "letter-spacing:.08em" }, label(r.path, r.neu ? b : a)), r.old ? el("del", null, r.old) : null, r.neu ? el("ins", null, r.neu) : el("span", { class: "muted" }, "(removed)"))),
       rows.length > 60 ? el("p", { class: "muted" }, "…and " + (rows.length - 60) + " more.") : null);
     $("askResult").hidden = !rows.length;
   }
   $("askApply").addEventListener("click", async () => {
     const pr = E.proposal; if(!pr || pr.id !== E.id) return;
-    try { await snapshot("Before Claude: " + pr.request.slice(0, 80)); E.data[E.id] = clone(pr.data); render(); await save(); closeAsk(true); $("askOut").textContent = "Applied. The previous version is saved in History."; toast("Applied"); }
-    catch(e){ toast("Couldn't apply. Nothing changed"); }
+    if(pr.base !== JSON.stringify(E.data[E.id])){ closeAsk(true); $("askOut").textContent = "The résumé changed. Review a new reply before applying."; return; }
+    try {
+      await snapshot("Before AI edit: " + pr.request.slice(0, 80));
+      if(pr.id !== E.id || pr.base !== JSON.stringify(E.data[pr.id])){ toast("The résumé changed. Review a fresh reply."); return; }
+      E.data[E.id] = clone(pr.data); render(); await window.HQ_FLUSH(); closeAsk(true);
+      $("askOut").textContent = "Applied. The previous version is saved in History."; toast("Applied");
+    } catch(e){ toast("Couldn't save this edit. Check the save status before continuing."); }
   });
   $("askDiscard").addEventListener("click", () => { closeAsk(true); $("askOut").textContent = "Discarded."; });
 
@@ -1005,7 +1108,7 @@ window.HQ_CONFIG = Object.assign({
     const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter", compress: true });
     let FACE = "courier";
     if(f){ doc.addFileToVFS("JBM-Regular.ttf", f.r); doc.addFont("JBM-Regular.ttf", "JBM", "normal"); doc.addFileToVFS("JBM-Bold.ttf", f.b); doc.addFont("JBM-Bold.ttf", "JBM", "bold"); FACE = "JBM"; }
-    doc.setProperties({ title: OWNER + " — " + (d.title || "Résumé"), author: OWNER, subject: "Résumé", creator: OWNER });
+    doc.setProperties({ title: d.name + " — " + (d.title || "Résumé"), author: d.name, subject: "Résumé", creator: "unmplyd" });
     const INK = [20, 20, 20], MID = [51, 51, 49], MUTED = [94, 94, 91], BLUE = [0, 63, 204], RULE = [216, 216, 212];
     const L = 40, R = 572, W = R - L, BOTTOM = 758; let y = 50;
     const cw = (size) => size * 0.6; // JetBrains Mono advance is 600/1000 em
@@ -1094,7 +1197,7 @@ window.HQ_CONFIG = Object.assign({
     catch(err){ const c = err && err.code; if(!/declin|cancel|denied|dismiss/i.test(String(c))) toast("Couldn't save the PDF"); }
   });
   $("pdfDrawer").addEventListener("click", async () => {
-    if(!E.assets){ toast("The file drawer works when this page runs as a Claude artifact"); return; }
+    if(!E.assets){ toast("File uploads require a connected storage adapter"); return; }
     await save(); const ab = await pdfBytes(); if(!ab) return;
     try {
       const r = await E.assets.upload(new Blob([ab], { type: "application/pdf" }), { type: "application/pdf" });
@@ -1108,13 +1211,17 @@ window.HQ_CONFIG = Object.assign({
   render();
   (async () => {
     const use = window.HQ_USE;
-    const [db, user, sample, downloads, assets] = await Promise.all([use("db"), use("user"), use("sample"), use("downloads"), use("assets")]);
-    E.db = db; E.sample = sample; E.downloads = downloads; E.assets = assets;
-    if(!db){ E.canWrite = false; $("paper").replaceChildren(el("div", { class: "empty" }, "Sign in to claude.ai to open your résumés.")); return; }
-    try { const c = user ? await user.can("data.write") : null; if(c === false) E.canWrite = false; } catch(e){}
+    const [db, user, ai, downloads, assets] = await Promise.all([use("db"), use("user"), use("ai"), use("downloads"), use("assets")]);
+    E.db = db; E.ai = ai; E.downloads = downloads; E.assets = assets;
+    if(!db){ E.canWrite = false; $("paper").replaceChildren(el("div", { class: "empty" }, "Your résumé storage connection is unavailable.")); return; }
+    try { E.canWrite = !!user && await user.can("data.write") === true; } catch(e){ E.canWrite = false; }
     if(!E.canWrite){ document.querySelectorAll("[data-edit-only]").forEach(n => { n.hidden = true; }); }
-    if(!sample){ $("askBtn").hidden = true; }
+    if(!ai){ $("askRun").hidden = true; }
     if(!assets){ $("pdfDrawer").hidden = true; }
+    for(const id of IDS){
+      const snap = await db.doc("resumes/" + id).get();
+      if(!snap.exists && E.canWrite) await db.doc("resumes/" + id).set({title:RES[id].label, data:{name:CFG.owner || "YOUR NAME",title:"YOUR PROFESSIONAL TITLE",contact:CFG.email || "Your contact details",summary:"Add your summary.",sections:[{type:"experience",heading:"EXPERIENCE",entries:[{company:"YOUR EMPLOYER",dates:"Dates",roles:[{title:"Your role"}],bullets:["Add a factual accomplishment."]}]}]},savedAt:new Date().toISOString()});
+    }
     IDS.forEach((id) => {
       db.doc("resumes/" + id).onSnapshot((snap) => {
         E.got[id] = true;

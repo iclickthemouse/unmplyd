@@ -2,3 +2,5 @@ out/
 .DS_Store
 *.local.json
 seed.private.json
+__pycache__/
+*.pyc

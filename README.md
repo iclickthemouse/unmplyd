@@ -1,137 +1,148 @@
 # unmplyd
 
-**A single-page home base for a job search.** Your current résumés, cover letters, applications, to-dos, portfolio links and LinkedIn copy all sit on one page, so you stop digging through old chats and folders to find the version you actually sent.
+**Keep every application and its documents together.** AI-assisted résumé edits
+and cover letters quickly become a pile of chats and nearly identical files.
+Maintain a base résumé, make small adjustments for each role, and retain dated
+packets of the exact résumé and letter you prepared or sent.
 
-It's one HTML file. It runs two ways:
+Works for any role, industry, or AI assistant. No model subscription or API key
+is required. Defaults and examples contain placeholders only.
 
-- **As a Claude artifact.** Published on claude.ai, your data is stored server-side, Claude can update it for you from any chat, and the résumé editor gets an **Ask Claude** button for prompted edits.
-- **Standalone.** Open it from any static web server. Data lives in your browser's local storage. No account, no backend, no build step.
+![Application workspace with placeholder data](docs/screenshot.png)
 
-![unmplyd running in standalone mode with example data](docs/screenshot.png)
+## Choose your workflow
 
-## What's on the page
+### Skill only — no app installation
 
-| Section | What it does |
+Download [SKILL.md](SKILL.md), attach it to an assistant or paste its contents,
+and ask: **“Use these instructions to organize my applications in my chosen
+private folder. Start with my base résumé and this role description.”**
+
+With file access, the assistant maintains a manifest, versioned drafts, one folder
+per role, and immutable submission packets. Without file access, it returns files
+for you to save. For assistants with skill discovery, place this single file in
+an unmplyd/SKILL.md skill folder following their own installation convention.
+This workflow does not automatically sync with the app.
+
+### Local web app
+
+    git clone https://github.com/iclickthemouse/unmplyd.git
+    cd unmplyd
+    python3 -m http.server 8000 --bind 127.0.0.1
+    # open http://localhost:8000
+
+Use an available Python 3 command. No packages or build step. Serve on localhost;
+direct file opening blocks seed/font fetching. The demo loads once into browser
+storage; replace its placeholders before use.
+
+| Area | What it does |
 |---|---|
-| **Send-ready résumés** | The current version for each track, with flags for anything that needs fixing before you send it. |
-| **Résumé editor** | Edit your résumé right on the page. Enter adds a bullet, Backspace on an empty bullet deletes it, and changes autosave. **Save version** keeps a named copy you can restore later, and one is saved automatically before any Claude edit. **Download PDF** produces a clean 2-page, ATS-friendly PDF in JetBrains Mono. **Ask Claude** (artifact mode) rewrites to your instruction and shows a diff before anything changes. |
-| **Needs attention** | A short to-do list grouped by area. |
-| **Applications & leads** | One row per role, with an inline status picker (Lead → Drafted → Applied → In review → Interview → Offer → Closed), last-touch date and next step. Filter by track. |
-| **Cover letters** | Current letters by company, flagged when one is stale or needs a fix. |
-| **Sites & portfolio** | Your live sites and profiles. |
-| **LinkedIn copy** | Headline, About and other drafts, each with a copy button. |
-| **File drawer** | Upload PDFs and other files (artifact mode). |
-| **Where things live** | Links to the chats, folders and drives where originals are kept. |
+| Résumé editor | Base and working copy, autosave, named history, restore, selectable-text PDF export. |
+| Edit with AI | Copy a prompt into any assistant, paste JSON, review the diff, explicitly apply. Previous data goes into History. |
+| Applications | Posting, status, dates, next step, selected résumé, letter draft, exact file links. |
+| Packets | Save packet captures résumé JSON, letter text, posting, links, status and timestamp. Packets previews/downloads every snapshot. |
+| Materials | Résumés, editable letter text, profiles, sites, chats, and private storage links. |
+| Tasks | Next steps and retained completed items. |
+
+Save the application form before capturing a packet. Captured text stays unchanged
+when the working résumé or letter changes. Saving a packet does not submit an
+application or change status. To record what was sent, capture the actual chosen
+documents and update status. External links can change; retain submitted PDF/Word
+files in your private folder. Download packets before clearing browser storage.
 
 <p>
-  <img src="docs/editor.png" alt="The résumé editor with an example résumé" width="49%">
-  <img src="docs/applications.png" alt="The applications table with inline status pickers" width="49%">
+  <img src="docs/editor.png" alt="Provider-neutral résumé editing" width="49%">
+  <img src="docs/applications.png" alt="Applications and saved document packets" width="49%">
 </p>
 
-The page supports any number of **tracks**: two different kinds of roles you're going after, each with its own résumé. The default config ships with two ("L&D" and "Creative Director") because that's what it was built for. Rename them or add more.
+## Configuration
 
-## Quick start (standalone)
+Edit HQ_CONFIG near the top of index.html, or define it in an earlier script.
+Top-level options are shallow-merged with defaults:
 
-```bash
-git clone https://github.com/iclickthemouse/unmplyd.git
-cd unmplyd
-python3 -m http.server 8000
-# open http://localhost:8000
-```
+    window.HQ_CONFIG = {
+      appName: "Application Workspace", owner: "", email: "", quickLinks: [],
+      tracks: [{id:"general", label:"General"}],
+      resumes: {
+        base: {label:"Base résumé", track:"general", file:"Resume_Base.pdf"},
+        tailored: {label:"Working copy", track:"general", file:"Resume_Tailored.pdf"}
+      },
+      retiredClaims: [], seedUrl: null // no demo; editable starters are created
+    };
 
-On first load it fills itself from `examples/seed.json`, a fictional job seeker named Alex Rivera. To start clean, run `localStorage.clear()` in the browser console, point `seedUrl` at your own file, and reload.
+Tracks are user-defined groupings, not fixed professions. Both is a legacy ID
+meaning all tracks. Existing records are preserved: when upgrading, keep your
+existing résumé and track IDs in configuration to keep editing those records.
+For an isolated demo use another hostname/port. To reset only this app after
+backing up packets, remove browser storage keys starting with unmplyd:.
 
-Opening `index.html` straight from disk (`file://`) mostly works, but browsers block the `fetch` calls for the seed and the PDF fonts. Use a local server.
+PDF metadata uses the résumé's own name. Local fonts fall back to Courier if
+unavailable. Page count depends on content; inspect the export before submission.
+No universal ATS compatibility is claimed.
 
-## Make it yours
+## Optional host integrations
 
-Edit the `HQ_CONFIG` block near the top of `index.html`:
+Storage is local to this browser and origin. A host can supply HQ_ADAPTERS before
+startup. No provider SDK is bundled. AI adapter interface:
 
-```js
-window.HQ_CONFIG = Object.assign({
-  appName: "Job Search HQ",
-  owner: "Your Name",            // masthead, PDF metadata, Claude prompts
-  email: "you@example.com",
-  quickLinks: [ { label: "Portfolio", url: "https://example.com" } ],
-  tracks: [ { id: "L&D", label: "L&D" }, { id: "Creative", label: "Creative Director" } ],
-  resumes: {                     // one editor tab each → db doc resumes/<key>
-    ld: { label: "L&D", track: "L&D", file: "Resume_Learning.pdf" },
-    cd: { label: "Creative Director", track: "Creative", file: "Resume_Creative_Director.pdf" }
-  },
-  retiredClaims: [],             // phrases Claude is told never to put back
-  fontUrls: { regular: "fonts/JetBrainsMono-Regular.ttf", bold: "fonts/JetBrainsMono-Bold.ttf" },
-  seedUrl: "examples/seed.json"  // standalone only
-}, window.HQ_CONFIG || {});
-```
+    window.HQ_ADAPTERS = {
+      ai: {edit: async ({prompt, signal}) => myConfiguredService(prompt, signal)}
+    };
 
-Or leave the file alone and define `window.HQ_CONFIG` in a `<script>` placed before it. The two are merged.
+Return complete résumé JSON or JSON text. Remote credentials belong in a trusted
+server-side integration, never in the HTML. Only Run connected AI invokes the
+adapter; copy/paste works without one. Prompts contain résumé, request, posting
+and retired claims. Replies are shape-checked and previewed; a changed working
+résumé invalidates a prior reply. Review facts yourself before applying.
 
-`retiredClaims` is for numbers or claims you've decided not to use any more, like a metric you can't back up. Claude's edit prompt forbids them, and if a proposed edit contains one anyway, the diff warns you before you apply it.
+Advanced hosts may supply db, user, assets and downloads. These are interfaces,
+not built-in cloud services. A connected db must be paired with authorization
+through user.can("data.write"), also enforced by host storage. Assets enables
+uploads; otherwise use private file links. Connected storage does not fall back
+to local permissions/downloads. See the local document/snapshot adapter and UI
+call sites in index.html for interface signatures. No migration is automatic.
 
-To write your own seed, copy `scripts/build_example_seed.py`, swap in your data, and run it. The data shapes are described below and in [AGENTS.md](AGENTS.md).
+The seed_to_batch.py helper exports local batch manifests for a host importer;
+it does not execute database writes. Use only for an empty destination because
+set entries replace documents.
 
-## Run it as a Claude artifact
+## App data model
 
-This is where the page is most useful: you can tell Claude "I applied to Acme today, add it to my HQ" in any chat, and it writes the row.
+| Collection | Key fields |
+|---|---|
+| materials | kind, track, title, subtitle, status, date, primary {label,url}, links[], note, flags[], editorId, text, assetId |
+| applications | company, role, track, status, applied, last, next, link, note, jobPosting, resumeId, resumeUrl, coverLetter, coverLetterUrl, packetId |
+| todos | area, text, done, order, created |
+| resumes | title, data, savedAt (ID matches config résumé key) |
+| resumes/<id>/versions | data, at, note |
+| applications/<id>/versions | at, applicationId, company, role, status, jobPosting, resumeId, resume, resumeUrl, coverLetter, coverLetterUrl |
 
-1. **Publish** `index.html` as an artifact with these capabilities:
-   ```json
-   { "db": {}, "user": {}, "assets": {}, "sample": {}, "downloads": true }
-   ```
-   `db` stores your data, `user` checks that you're the one editing, `assets` powers the file drawer, `sample` powers Ask Claude, and `downloads` saves PDFs.
-2. **Upload the fonts** (`fonts/*.ttf`) to the artifact's asset store, then set `fontUrls` to the `/_blob/<id>` URLs you get back and republish. Without them, PDFs fall back to Courier.
-3. **Load your data.** Artifacts start empty and don't read `seed.json`. Turn your seed into batch writes and have Claude apply them with its artifact data tool:
-   ```bash
-   python3 scripts/seed_to_batch.py examples/seed.json out/
-   ```
-   That writes one JSON file per document plus `out/batch-N.json` files (50 writes each).
-4. **Tell Claude to keep it updated.** Add a standing instruction to your Claude preferences, something like: *"In any job-search chat, update my Job Search HQ artifact (link) before finishing: new applications, status changes, new résumé or letter versions."* [AGENTS.md](AGENTS.md) has the rules an agent should follow.
+Material kinds: resume, letter, site, linkedin, chat, vault, file. Statuses:
+Lead, Drafted, Applied, In review, Interview, Offer, Closed. A packet's resume is
+a deep snapshot, not a live reference. Résumé data contains name, title, contact,
+summary and sections of type experience, groups, or lines; see the complete
+[example seed](examples/seed.json). Regenerate it with
+python3 scripts/build_example_seed.py. See [AGENTS.md](AGENTS.md) for maintenance.
 
-## Data model
+## Privacy and limits
 
-Everything is a document in a collection:
+No built-in AI requests or real search history. Browser storage is not encrypted,
+synced, or automatically backed up; clearing it removes data, and other people
+using the same browser profile can access it. Optional host storage follows
+the host's access and sharing rules. Packets freeze text, not remote file bytes.
 
-| Collection | One doc per | Key fields |
-|---|---|---|
-| `materials` | résumé, letter, site, LinkedIn snippet, chat, folder or file | `kind`, `track`, `title`, `subtitle`, `status`, `date`, `primary {label,url}`, `links[]`, `note`, `flags[]`, `order`, `editorId`, `text`, `assetId` |
-| `applications` | role | `company`, `role`, `track`, `status`, `applied`, `last`, `next`, `link`, `note`, `order` |
-| `todos` | task | `area`, `text`, `done`, `order`, `link`, `created` |
-| `resumes` | editable résumé (doc id = `resumes` key in config) | `title`, `data`, `savedAt` |
-| `resumes/<id>/versions` | saved version | `data`, `at`, `note` |
+jsPDF loads from cdnjs for PDF export. Fonts and seed are local by default;
+configured remote URLs/adapters create their own requests. Copying a prompt
+shares its data with your chosen assistant. No job discovery or auto-applying.
 
-`materials.kind` is one of `resume`, `letter`, `site`, `linkedin`, `chat`, `vault`, `file`. `status` is free text, but the page styles `current`, `live`, `draft`, `older` and `needs fix`.
+## Development and credits
 
-A résumé's `data` looks like this:
+[Repository inventory](docs/INVENTORY.md). Storage checks:
+node --test tests/runtime.test.cjs. Browser-check editing, AI review/history,
+application packets, and PDF download after behavior changes.
 
-```json
-{
-  "name": "ALEX RIVERA", "title": "LEARNING & ENABLEMENT LEADER", "contact": "Chicago, IL / alex@example.com",
-  "summary": "…",
-  "sections": [
-    { "type": "experience", "heading": "EXPERIENCE", "entries": [
-      { "company": "NORTHWIND HEALTH", "note": "", "dates": "Mar 2023 – Present",
-        "roles": [ { "title": "Head of Learning & Enablement", "dates": "", "bullets": [] } ],
-        "bullets": ["…"],
-        "clientsHeading": "", "clients": [ { "name": "", "desc": "", "bullets": [] } ] } ] },
-    { "type": "groups", "heading": "CAPABILITIES", "groups": [ { "label": "Systems", "text": "LMS / HRIS / xAPI" } ] },
-    { "type": "lines",  "heading": "EDUCATION",    "lines":  [ { "bold": "State University", "text": "B.A." } ] }
-  ]
-}
-```
-
-## Privacy
-
-In standalone mode nothing leaves your browser. In artifact mode, data lives in the artifact's database on claude.ai and stays private until you share the artifact. Anyone you share it with can read everything on it, applications and notes included, so think about that before you send the link to someone.
-
-The only network requests the page makes are for jsPDF (from cdnjs) and, if you configure them, the font files and seed.
-
-## Credits
-
-Built by [Mike Clark](https://github.com/iclickthemouse) with Claude, for his own job search, then opened up.
-
-- PDF export: [jsPDF](https://github.com/parallax/jsPDF) (MIT)
-- Font: [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (SIL Open Font License 1.1, see `fonts/OFL.txt`)
-
-## License
+- PDF: [jsPDF](https://github.com/parallax/jsPDF) (MIT).
+- Font: [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (SIL OFL 1.1;
+  original notices in fonts/OFL.txt).
 
 MIT. See [LICENSE](LICENSE).

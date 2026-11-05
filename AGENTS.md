@@ -1,37 +1,35 @@
-# Keeping an unmplyd HQ up to date
+# Working on unmplyd
 
-Read this if you're an AI agent (Claude, or anything else with write access to the artifact's database) asked to keep someone's job-search HQ current.
+Organize application materials, small résumé adjustments, and exact versions
+prepared or sent for each role. Keep defaults useful for any occupation/industry.
 
-## When to write
+## Repository changes
 
-Update the HQ before you finish any conversation in which the person:
+- The UI, document store, editor, history, AI review, packets and PDF export live
+  in index.html. There is no build system.
+- Defaults/examples/screenshots must stay anonymous and industry-neutral. Do not
+  add personal names, real search details, model names, or provider SDKs.
+- AI works through copy/paste by default. Optional integrations use
+  window.HQ_ADAPTERS; preserve diff review, explicit apply, and prior snapshots.
+- Regenerate examples with python3 scripts/build_example_seed.py.
+- Run node --test tests/runtime.test.cjs for storage regressions. Browser-check
+  editing, AI review/apply, history, packets, and PDF export after behavior changes.
+- Retain original third-party font/license notices.
 
-- applies to a role, hears back, or changes an application's status
-- makes a new résumé, cover letter, portfolio page or LinkedIn draft, or decides an old one is retired
-- commits to a next step ("follow up Friday", "prep for the panel")
+## Maintaining a workspace
 
-If nothing on that list happened, don't write anything.
+Read before writing, merge changes, and preserve unknown fields. Never invent
+employers, titles, dates, qualifications, claims, or metrics. Respect retiredClaims.
+Dates use YYYY-MM-DD; last means real last activity, not today's date by default.
+Statuses: Lead, Drafted, Applied, In review, Interview, Offer, Closed. Track IDs
+come from config; Both means all tracks. Links use https:// or a host asset path.
+Stable IDs must distinguish roles at the same company (a-company-role-date).
 
-## How to write
+Before replacing résumé data, save its previous data in resumes/<id>/versions
+with timestamp and reason. Retire old materials with status older instead of
+overwriting them. A ready/sent packet belongs in applications/<id>/versions;
+update packetId without changing earlier packets. Preserve exact submitted files.
 
-- **Read first.** Get the current doc before you change it, and use `update` (merge) instead of `set` so you don't wipe fields you didn't touch.
-- **Never delete.** When a résumé or letter is replaced, set the old doc's `status` to `"older"` and add the new one. History is the point.
-- **Dates** are `YYYY-MM-DD`. `applications.last` is the date of the last real contact, not today's date by default.
-- **Statuses** for applications are exactly: `Lead`, `Drafted`, `Applied`, `In review`, `Interview`, `Offer`, `Closed`.
-- **Tracks** must match a `tracks[].id` in the page's config, or `"Both"`.
-- **Links** must be `https://`. The page refuses to render anything else.
-- **Résumé edits** go to `resumes/<id>` as the whole `data` object, and first save the previous `data` to `resumes/<id>/versions/<new id>` with a `note` saying what changed and why.
-- **Don't invent anything.** No metrics, titles, dates or employers the person hasn't given you. If the config has `retiredClaims`, none of those phrases may appear anywhere.
-- **Keep it short.** `note` and `next` are one line each. `flags[]` are things to fix before sending, phrased as instructions ("Add reel link").
-
-## IDs
-
-Use short, readable, stable IDs: `a-<company>` for applications, `l-<company>` for letters, `r-<track>-<yyyymm>` for résumés, `t-<n>` for to-dos. Stable IDs let the next agent find what you wrote.
-
-## Field reference
-
-See the *Data model* section of [README.md](README.md). `examples/seed.json` has a complete example of every collection.
-
-## If you can't write
-
-If you don't have access to the artifact's database in this session, say so, and leave a dated note wherever the person keeps their job-search files, so the next session can catch up.
+See README.md for app data. SKILL.md is a self-contained file workflow without
+the app; it has its own manifest and does not automatically sync to browser data.
+If storage is unavailable, report a pending update rather than claiming a write.
