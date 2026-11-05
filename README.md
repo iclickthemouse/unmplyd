@@ -10,11 +10,18 @@ documents you chose for each role. Any occupation, industry, or AI assistant.
 
     git clone https://github.com/iclickthemouse/unmplyd.git
     cd unmplyd
-    npm start
+    node scripts/serve.mjs
     # open http://localhost:8000
 
-Requires a recent Node.js release (20+). No npm install, framework build, account,
-API key, or configuration file. Alternatively serve the repository using Python 3:
+Requires a recent Node.js release (20+). No package installation, framework build,
+account, API key, or configuration file.
+
+**Windows:** double-click `start.cmd`, or run `npm.cmd start` in PowerShell.
+If PowerShell reports that `npm.ps1` is blocked, use `npm.cmd` rather than changing
+the system execution policy. `node scripts/serve.mjs` also works directly.
+On other platforms, `npm start` remains available.
+
+Alternatively serve the repository using Python 3:
 
     python3 -m http.server 8000 --bind 127.0.0.1
 

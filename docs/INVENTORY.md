@@ -13,6 +13,7 @@ dependency. Historical Git commits and repository ownership are unchanged.
 | src/store.js | Validated schema v3, localStorage metadata, immutable versions/packets, IndexedDB originals, legacy migration, full additive backups. |
 | src/documents.js | PDF/Word/text/legacy JSON imports, assistant-neutral prompts, multipage PDF and text downloads. |
 | scripts/serve.mjs | Local-only static server with path confinement and correct module MIME types. |
+| start.cmd | Windows launcher using Node directly, without PowerShell script-policy changes. |
 | package.json | Start/dev/test commands; no installed dependencies. |
 | vendor/ | Local jsPDF 2.5.1, PDF.js 4.10.38 + worker, Mammoth 1.9.0 and notices. |
 | fonts/ | JetBrains Mono regular/bold and original OFL license. |
