@@ -1,0 +1,126 @@
+{
+  "format": "unmplyd-backup",
+  "version": 3,
+  "exportedAt": "2026-11-05T12:00:00.000Z",
+  "state": {
+    "schemaVersion": 3,
+    "profile": {
+      "name": "",
+      "email": "",
+      "location": "",
+      "headline": "",
+      "workspaceName": "Example workspace",
+      "writingPreferences": "Direct, concise, and factual.",
+      "tracks": [
+        {
+          "id": "general",
+          "label": "General"
+        }
+      ]
+    },
+    "resumes": [
+      {
+        "id": "resume-example",
+        "title": "Sample base résumé",
+        "track": "general",
+        "text": "YOUR NAME\nYOUR PROFESSIONAL HEADLINE\nyou@example.com\n\nSUMMARY\nReplace with your verified professional summary.\n\nEXPERIENCE\nYOUR EMPLOYER | YOUR ROLE\nStart - End\n- A responsibility you can support.\n- A verified accomplishment.\n\nSKILLS\nYour verified skills",
+        "createdAt": "2026-11-05T12:00:00.000Z",
+        "updatedAt": "2026-11-05T12:00:00.000Z",
+        "versions": [
+          {
+            "id": "version-example",
+            "text": "YOUR NAME\nYOUR PROFESSIONAL HEADLINE\nyou@example.com\n\nSUMMARY\nReplace with your verified professional summary.\n\nEXPERIENCE\nYOUR EMPLOYER | YOUR ROLE\nStart - End\n- A responsibility you can support.\n- A verified accomplishment.\n\nSKILLS\nYour verified skills",
+            "note": "Placeholder starter; replace before use",
+            "at": "2026-11-05T12:00:00.000Z"
+          }
+        ]
+      }
+    ],
+    "applications": [
+      {
+        "id": "application-example-0",
+        "company": "Example organization",
+        "role": "Target role",
+        "status": "Drafted",
+        "track": "general",
+        "location": "Remote",
+        "posting": "Sample only. Replace with an actual role description.",
+        "url": "",
+        "salary": "",
+        "deadline": "",
+        "appliedOn": "",
+        "lastContact": "",
+        "nextStep": "Review the role description.",
+        "followUpOn": "",
+        "notes": "Sample only; no real application.",
+        "resumeId": "",
+        "coverLetter": "",
+        "packets": [],
+        "attachments": [],
+        "createdAt": "2026-11-05T12:00:00.000Z",
+        "updatedAt": "2026-11-05T12:00:00.000Z"
+      },
+      {
+        "id": "application-example-1",
+        "company": "Example company",
+        "role": "Another opportunity",
+        "status": "Applied",
+        "track": "general",
+        "location": "Remote",
+        "posting": "Sample only. Replace with an actual role description.",
+        "url": "",
+        "salary": "",
+        "deadline": "",
+        "appliedOn": "",
+        "lastContact": "",
+        "nextStep": "Review the role description.",
+        "followUpOn": "",
+        "notes": "Sample only; no real application.",
+        "resumeId": "",
+        "coverLetter": "",
+        "packets": [],
+        "attachments": [],
+        "createdAt": "2026-11-05T12:00:00.000Z",
+        "updatedAt": "2026-11-05T12:00:00.000Z"
+      },
+      {
+        "id": "application-example-2",
+        "company": "Example team",
+        "role": "Next role",
+        "status": "Interview",
+        "track": "general",
+        "location": "Remote",
+        "posting": "Sample only. Replace with an actual role description.",
+        "url": "",
+        "salary": "",
+        "deadline": "",
+        "appliedOn": "",
+        "lastContact": "",
+        "nextStep": "Review the role description.",
+        "followUpOn": "",
+        "notes": "Sample only; no real application.",
+        "resumeId": "",
+        "coverLetter": "",
+        "packets": [],
+        "attachments": [],
+        "createdAt": "2026-11-05T12:00:00.000Z",
+        "updatedAt": "2026-11-05T12:00:00.000Z"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "task-example",
+        "text": "Replace these sample documents and roles with your own.",
+        "done": false,
+        "dueOn": "",
+        "applicationId": "",
+        "createdAt": "2026-11-05T12:00:00.000Z"
+      }
+    ],
+    "materials": [],
+    "onboardingComplete": true,
+    "createdAt": "2026-11-05T12:00:00.000Z",
+    "updatedAt": "2026-11-05T12:00:00.000Z"
+  },
+  "files": []
+}

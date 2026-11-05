@@ -1,28 +1,34 @@
-# Repository inventory
+# Repository inventory — v3
 
-Reviewed 2026-11-05. The original repo had 14 files: one HTML app, README, agent
-instructions, MIT license, ignore rules, three screenshots, JSON seed, two Python
-helpers, two fonts and their license. No build system, package manifest, tests,
-CI, backend, or deployment was present.
+Updated 2026-11-05. The initial 14-file single-HTML organizer is now a modular
+static application with guided onboarding, editable preferences and a complete
+role/document workflow. No framework build, backend, hosted account, or paid model
+dependency. Historical Git commits and repository ownership are unchanged.
 
 | Path | Purpose |
 |---|---|
-| index.html | Styles/config, local document store, material/task/application CRUD, résumé editor/history, AI review, packet snapshots, PDF export and optional host adapters. |
-| SKILL.md | Independent model-neutral file workflow, no app checkout required. |
-| AGENTS.md | Repository/workspace maintenance rules. |
-| examples/seed.json | Generated anonymous placeholders, no real career/search history. |
-| scripts/build_example_seed.py | Reproducible seed generator. |
-| scripts/seed_to_batch.py | Generic local manifests for an external importer. |
-| fonts/ | Local regular/bold fonts and original license. |
-| docs/*.png | Screenshots containing placeholders only. |
-| tests/runtime.test.cjs | Dependency-free storage regression tests. |
+| index.html | Accessible boot shell and local library loading. |
+| src/app.js | Three-step setup, settings, dashboard, board/list, role workspace, document/letter editing, review, history, tasks, search, backup UI. |
+| src/styles.css | Responsive ivory/cobalt design, sidebar, onboarding, mobile and native dialogs. |
+| src/store.js | Validated schema v3, localStorage metadata, immutable versions/packets, IndexedDB originals, legacy migration, full additive backups. |
+| src/documents.js | PDF/Word/text/legacy JSON imports, assistant-neutral prompts, multipage PDF and text downloads. |
+| scripts/serve.mjs | Local-only static server with path confinement and correct module MIME types. |
+| package.json | Start/dev/test commands; no installed dependencies. |
+| vendor/ | Local jsPDF 2.5.1, PDF.js 4.10.38 + worker, Mammoth 1.9.0 and notices. |
+| fonts/ | JetBrains Mono regular/bold and original OFL license. |
+| tests/*.test.mjs | 20 unit tests for state/document behavior. |
+| docs/*.png | Anonymous onboarding, dashboard, applications, editor, and mobile screenshots. |
+| examples/workspace-backup.json | Clearly labeled placeholder workspace for an optional restore demo. |
+| scripts/build_example_seed.py | Rebuilds that example backup; never loads automatically. |
+| SKILL.md | Self-contained folder/manifest workflow without installing the app. |
 
-This update replaces a provider-specific runtime with optional host adapters and
-copy/paste AI review; uses General, Base résumé and Working copy defaults; and
-adds immutable résumé/letter packets per application. Personal attribution is
-removed from current content/license and screenshots regenerated. Git history
-and GitHub account ownership remain unchanged; no history rewrite is performed.
+Validation: unit tests plus native browser onboarding, preferences, defaults,
+base-protected role copies, AI review, packet immutability and original bytes,
+full backup into a fresh profile, PDF export/re-import, dialogs, persistence,
+desktop and 390px phone layouts. Remote account/service integrations are not
+implemented or implied. Local files and backups require private handling.
 
-Limits: browser quotas, no automatic backup/multi-device sync; uploads require a
-host adapter; external links are not frozen; PDF export needs a CDN script.
-Shape validation cannot verify résumé facts. Inspect facts and exported layouts.
+Limits: browser storage can be cleared or reach quota; no cloud sync or encryption
+at rest; imports preserve text rather than source layout; scanned PDFs need OCR
+elsewhere; standard PDF font limits non-Latin output; original uploads retain their
+bytes. Saved-only packets and reported submissions are intentionally distinct.

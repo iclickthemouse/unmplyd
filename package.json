@@ -1,0 +1,12 @@
+{
+  "name": "unmplyd",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A private application workspace for every role and document version.",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}

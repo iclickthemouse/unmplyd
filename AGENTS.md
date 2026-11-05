@@ -1,35 +1,41 @@
 # Working on unmplyd
 
-Organize application materials, small résumé adjustments, and exact versions
-prepared or sent for each role. Keep defaults useful for any occupation/industry.
+An industry-neutral application workspace focused on the exact résumé, letter and
+files prepared or sent for a role. Keep examples anonymous; never add personal
+search details, fixed career assumptions, or named AI providers.
 
-## Repository changes
+## Architecture
 
-- The UI, document store, editor, history, AI review, packets and PDF export live
-  in index.html. There is no build system.
-- Defaults/examples/screenshots must stay anonymous and industry-neutral. Do not
-  add personal names, real search details, model names, or provider SDKs.
-- AI works through copy/paste by default. Optional integrations use
-  window.HQ_ADAPTERS; preserve diff review, explicit apply, and prior snapshots.
-- Regenerate examples with python3 scripts/build_example_seed.py.
-- Run node --test tests/runtime.test.cjs for storage regressions. Browser-check
-  editing, AI review/apply, history, packets, and PDF export after behavior changes.
-- Retain original third-party font/license notices.
+- index.html is the boot shell; src/app.js owns UI/routes/onboarding/settings.
+- src/styles.css owns responsive styles. src/store.js owns versioned metadata,
+  legacy migration, immutable snapshots, IndexedDB originals, backup/restore.
+- src/documents.js owns imports, provider-neutral prompts and PDF/text exports.
+- vendor/ and fonts/ are local dependencies with their original notices.
+- npm start serves the static app; no installation or build step. npm test runs
+  dependency-free tests. tests/*.test.mjs cover state and document invariants.
+- Browser-check onboarding, role copies, AI review, history, packet/file retention,
+  backup restore, document import/export and phone layout after behavior changes.
 
-## Maintaining a workspace
+## Product invariants
 
-Read before writing, merge changes, and preserve unknown fields. Never invent
-employers, titles, dates, qualifications, claims, or metrics. Respect retiredClaims.
-Dates use YYYY-MM-DD; last means real last activity, not today's date by default.
-Statuses: Lead, Drafted, Applied, In review, Interview, Offer, Closed. Track IDs
-come from config; Both means all tracks. Links use https:// or a host asset path.
-Stable IDs must distinguish roles at the same company (a-company-role-date).
+- Onboarding and settings are the configuration interface. No mandatory email,
+  provider, API key, fixed profession, or required number of role groups.
+- Protect the verified base résumé: tailoring creates a separate role copy.
+- AI output is ordinary draft text. Explicit comparison and review precede save.
+  Preserve earlier text in version history and respect excluded claims.
+- New applications are Lead; dates start blank. A status change is not contact.
+  Save ready packet does not imply submission. Record submission requires user
+  confirmation of date and exact documents. Never apply or send for the user.
+- Packets and file IDs are immutable. Remove references from working attachments,
+  not original bytes referenced by saved packets. Archive roles; retain history.
+- Complete backups include originals and reject missing files. Imports merge and
+  remap references instead of silently overwriting records. Preserve unknown fields
+  and original legacy keys. No fictitious migration of unavailable remote data.
+- Display save/storage failures honestly and stop stale tabs from overwriting
+  newer work. No unimplemented sync/account claims or fabricated ATS scores.
+- The local app uses no external network services. Keep import/export libraries
+  bundled locally and preserve their license notices.
 
-Before replacing résumé data, save its previous data in resumes/<id>/versions
-with timestamp and reason. Retire old materials with status older instead of
-overwriting them. A ready/sent packet belongs in applications/<id>/versions;
-update packetId without changing earlier packets. Preserve exact submitted files.
-
-See README.md for app data. SKILL.md is a self-contained file workflow without
-the app; it has its own manifest and does not automatically sync to browser data.
-If storage is unavailable, report a pending update rather than claiming a write.
+For maintaining a user's real workspace, read first and write only supported
+changes. Never invent facts, credentials or metrics. SKILL.md is the independent
+file-based workflow, not an automatic app integration.
