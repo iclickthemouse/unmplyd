@@ -1,36 +1,873 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="A private workspace for every application, résumé version, and cover letter. Built for any role and any AI assistant."
-    />
-    <meta name="theme-color" content="#003fcc" />
-    <title>unmplyd — A place for every version</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="src/styles.css" />
-    <script defer src="vendor/jspdf.umd.min.js"></script>
-    <script defer src="vendor/mammoth.browser.min.js"></script>
-  </head>
-  <body>
-    <a href="#main" class="skip-link visually-hidden">Skip to main content</a>
-    <div id="app">
-      <div style="padding: 50px; font-family: system-ui">
-        Opening your workspace…
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>unmplyd</title>
+<meta name="description" content="Build bespoke, designed résumés in your browser, keep track of every version, and export clean PDFs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+[hidden]{display:none !important}
+/* Layout: a hairline-grid masthead, the résumé library, then the editor on paper. */
+:root{
+  --bg:#FAFAF8; --surface:#FFFFFF; --ink:#141414; --mid:#333331; --muted:#5E5E5B;
+  --rule:#D8D8D4; --hair:#ECECE8; --accent:#003FCC; --accent-ink:#FFFFFF; --accent-soft:#E7EDFB;
+  --good:#1D7344; --good-soft:#E3F2E9; --warn:#9A5600; --warn-soft:#FBEFDC; --bad:#B42318; --bad-soft:#FBE7E5;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  /* the résumé paper keeps one print look in both themes */
+  --p-bg:#FFFFFF; --p-ink:#141414; --p-mid:#333331; --p-muted:#5E5E5B; --p-blue:#003FCC; --p-rule:#D8D8D4; --p-hover:#E7EDFB;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0C; --surface:#161615; --ink:#F2F2EE; --mid:#D9D9D3; --muted:#9C9C95;
+  --rule:#3A3A36; --hair:#242422; --accent:#6B94FF; --accent-ink:#0D0D0C; --accent-soft:#18223D;
+  --good:#5BC48A; --good-soft:#13281C; --warn:#E3A548; --warn-soft:#2E2312; --bad:#F07067; --bad-soft:#341614; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D0D0C; --surface:#161615; --ink:#F2F2EE; --mid:#D9D9D3; --muted:#9C9C95;
+  --rule:#3A3A36; --hair:#242422; --accent:#6B94FF; --accent-ink:#0D0D0C; --accent-soft:#18223D;
+  --good:#5BC48A; --good-soft:#13281C; --warn:#E3A548; --warn-soft:#2E2312; --bad:#F07067; --bad-soft:#341614; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+h2{font-size:20px;letter-spacing:-.02em;font-weight:700}
+h3{font-size:16px;letter-spacing:-.01em;font-weight:700}
+.num{font-variant-numeric:tabular-nums}
+
+/* masthead */
+.mast{border-bottom:1px solid var(--rule);background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:48px 48px}
+.mast .wrap{padding-block:36px 22px;display:grid;gap:22px}
+.mast-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.mast h1{font-size:clamp(28px,5vw,44px);letter-spacing:.14em;font-weight:700;line-height:1.05}
+.mast h1 .bar{display:block;width:72px;height:3px;background:var(--accent);margin-top:14px}
+.quick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.stat{background:var(--surface);padding:12px 14px;min-width:0}
+.stat b{display:block;font-size:24px;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2}
+.stat small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+nav.jump{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+#syncnote{font-size:12px;color:var(--muted)}
+
+/* sections */
+main .wrap{display:grid;gap:44px;padding-block:36px 64px}
+section{display:grid;gap:14px;min-width:0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;border-bottom:1px solid var(--rule);padding-bottom:8px}
+.sec-head p{margin:0;font-size:12px;color:var(--muted)}
+
+/* buttons, chips */
+.btn{font:inherit;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid var(--rule);background:var(--surface);color:var(--ink);padding:7px 12px;cursor:pointer;border-radius:2px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;min-height:34px}
+.btn:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{color:var(--accent-ink);filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted);padding:4px 8px;min-height:28px}
+.btn.ghost:hover{color:var(--accent);border-color:var(--rule)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap;background:var(--hair);color:var(--muted)}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.accent{background:var(--accent-soft);color:var(--accent)}
+.track{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.muted{color:var(--muted)}
+.empty{border:1px dashed var(--rule);padding:16px;color:var(--muted);font-size:13px}
+
+/* résumé cards */
+.resumes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.rcard{background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);padding:20px;display:grid;gap:12px;align-content:start;min-width:0}
+.rcard .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.rcard p{margin:0;font-size:13px}
+.flags{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:12.5px}
+.flags li{padding-left:16px;position:relative}
+.flags li::before{content:"";position:absolute;left:2px;top:.65em;width:6px;height:6px;background:var(--warn)}
+details.older{border:1px solid var(--rule);background:var(--surface)}
+details.older summary{cursor:pointer;padding:10px 14px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+details.older[open] summary{border-bottom:1px solid var(--hair)}
+
+/* lists */
+.list{display:grid;border:1px solid var(--rule);background:var(--surface)}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:12px 14px;border-top:1px solid var(--hair);align-items:start}
+.item:first-child{border-top:0}
+.item .t{color:var(--ink);font-weight:700}
+.item .meta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:12px;color:var(--muted)}
+.item .note{grid-column:1/-1;font-size:12.5px;margin:0}
+.item .acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center}
+.item.done .t{text-decoration:line-through;color:var(--muted)}
+
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* forms */
+form.ed{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;padding:14px;background:var(--bg);border:1px solid var(--rule)}
+form.ed label{display:grid;gap:4px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;min-width:0}
+form.ed .wide{grid-column:1/-1}
+form.ed input,form.ed select,form.ed textarea{font:inherit;font-size:13px;letter-spacing:0;text-transform:none;font-weight:400;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:7px 9px;border-radius:2px;width:100%;min-width:0}
+form.ed textarea{min-height:70px;resize:vertical}
+form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 14px;font-size:12px;font-weight:700;letter-spacing:.06em;z-index:20}
+
+.edbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#edStatus{font-size:12px;color:var(--muted);margin-right:auto;min-width:0}
+.edbar input{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:6px 9px;border-radius:2px;width:220px;max-width:100%}
+.panel{border:1px solid var(--rule);background:var(--surface);padding:14px;display:grid;gap:10px;min-width:0}
+.panel textarea{font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--rule);padding:8px 10px;border-radius:2px;width:100%;min-height:70px;resize:vertical}
+.panel details summary{cursor:pointer;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips .btn{font-size:11.5px;min-height:28px;padding:4px 9px}
+#askOut{margin:0;font-size:12.5px;color:var(--muted)}
+.diffrow{display:grid;gap:4px;padding:9px 0;border-top:1px solid var(--hair);font-size:12.5px;min-width:0}
+.diffrow del{color:var(--muted)}
+.diffrow ins{text-decoration:none;color:var(--ink);background:var(--good-soft);padding:1px 3px}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:9px 0;border-top:1px solid var(--hair);align-items:center}
+.hrow:first-child{border-top:0}
+.hrow .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#pvBar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:var(--warn-soft);color:var(--warn);padding:9px 12px;font-size:12.5px;font-weight:700}
+.paperwrap{min-width:0}
+.paper{background:var(--p-bg);color:var(--p-mid);max-width:8.5in;margin:0 auto;padding:48px 52px 56px;border:1px solid var(--rule);box-shadow:0 18px 40px -28px rgba(0,0,0,.45);font-size:12.5px;line-height:1.55}
+.paper [data-path]{border-radius:2px;outline:1px dashed transparent;outline-offset:2px;transition:outline-color .15s,background-color .15s}
+.paper:not(.readonly) [data-path]:hover{outline-color:var(--p-rule)}
+.paper:not(.readonly) [data-path]:focus{outline:2px solid var(--p-blue);background:var(--p-hover)}
+.paper [data-path]:empty::before{content:attr(data-ph);color:var(--p-muted)}
+.paper .phead{text-align:center;display:grid;justify-items:center;gap:2px}
+.paper .pname{font-size:26px;letter-spacing:.2em;color:var(--p-ink);font-weight:700;margin:0}
+.paper .uline{width:90px;height:2px;background:var(--p-blue);margin:6px 0 8px}
+.paper .ptitle{margin:0;letter-spacing:.22em;font-size:12px;font-weight:500;color:var(--p-ink)}
+.paper .pcontact{margin:4px 0 0;color:var(--p-muted);font-size:11.5px}
+.paper .psum{border-left:3px solid var(--p-blue);padding-left:12px;margin:20px 0 4px}
+.paper .sh{display:flex;align-items:center;gap:10px;margin:22px 0 10px}
+.paper .sh .num{color:var(--p-blue);font-weight:700}
+.paper .sh h2{font-size:13px;letter-spacing:.16em;color:var(--p-ink);margin:0}
+.paper .sh .line{flex:1;height:1px;background:var(--p-rule)}
+.paper .job{margin:0 0 14px}
+.paper .jrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.paper .co{font-weight:700;letter-spacing:.08em;color:var(--p-ink)}
+.paper .note{color:var(--p-muted);font-style:italic;font-size:11.5px}
+.paper .dates{margin-left:auto;color:var(--p-muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+.paper .role{color:var(--p-blue)}
+.paper .ital{color:var(--p-muted);font-style:italic;font-size:11.5px;margin:2px 0}
+.paper ul{list-style:none;margin:4px 0 6px;padding:0}
+.paper li{position:relative;padding-left:16px;margin:3px 0}
+.paper li::before{content:"";position:absolute;left:3px;top:.62em;width:5px;height:5px;background:var(--p-blue)}
+.paper .btxt{display:inline}
+.paper .subh{font-weight:700;letter-spacing:.14em;font-size:11px;color:var(--p-muted);margin:10px 0 4px}
+.paper .client{margin:6px 0 2px}
+.paper .client b,.paper .pline b{color:var(--p-ink)}
+.paper .grp{margin:0 0 10px}
+.paper .glabel{font-weight:700;color:var(--p-ink);margin:0}
+.paper .gtext{margin:0}
+.paper .pline{margin:4px 0}
+.paper .empty{border-color:var(--p-rule);color:var(--p-muted)}
+@media (max-width:760px){
+  .paper{padding:26px 16px 30px;font-size:12px}
+  .paper .pname{font-size:21px;letter-spacing:.14em}
+  .paper .dates{margin-left:0}
+
+  .resumes{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* additions for the standalone résumé tool */
+.banner{border:1px solid var(--rule);border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;font-size:13px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.banner.warn{border-left-color:var(--warn)}
+.banner p{margin:0;flex:1 1 300px;min-width:0}
+#impConfirm:empty{display:none}
+.edhost{grid-column:1/-1;min-width:0}
+.rcard{border-top-width:3px}
+.edbar .btn:disabled{opacity:.45;cursor:default}
+.edbar .accent{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.edbar .accent select{font:inherit;font-size:12px;letter-spacing:0;text-transform:none;font-weight:400;padding:5px 6px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:2px;min-height:34px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.panel #askReply{min-height:90px}
+/* layout controls, shown only while Edit layout is on */
+.paper .ctl{font:700 10.5px/1.4 var(--mono);letter-spacing:.04em;border:1px solid var(--p-rule);background:var(--p-bg);color:var(--p-blue);padding:2px 7px;margin:0 0 0 6px;cursor:pointer;border-radius:2px;vertical-align:middle}
+.paper .ctl:hover{border-color:var(--p-blue)}
+.paper .ctlrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0;font:11px var(--mono);color:var(--p-muted)}
+.paper .ctlrow .ctl{margin:0}
+.paper .ctls{display:inline-flex;gap:4px}
+.paper:not(.layout) .ctl,.paper:not(.layout) .ctlrow,.paper:not(.layout) .ctls{display:none}
+.paper.layout .job,.paper.layout .grp,.paper.layout .pline{outline:1px dashed var(--p-rule);outline-offset:4px}
+.paper .co{text-transform:uppercase}
+.paper.mini{padding:24px 26px;font-size:11.5px;box-shadow:none;max-height:520px;overflow:auto}
+@media print{.mast,#resumes,.sec-head,.edbar,.panel,#pvBar,#edHint{display:none!important}.paper{border:0;box-shadow:none;padding:0}}
+</style>
+<header class="mast">
+  <div class="wrap">
+    <div class="mast-top">
+      <div>
+        <p class="eyebrow" style="margin:0 0 10px">Bespoke résumés · kept track of</p>
+        <h1>UNMPLYD<span class="bar"></span></h1>
+      </div>
+      <div class="quick">
+        <button class="btn" type="button" id="expBtn">Export backup</button>
+        <label class="btn" for="impFile">Import backup</label><input type="file" id="impFile" accept=".json,application/json" hidden>
+        <button class="btn primary" type="button" id="newTop">+ New résumé</button>
       </div>
     </div>
-    <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
-    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-    <noscript
-      >This workspace needs JavaScript to save and organize your documents. Your
-      existing data stays untouched.</noscript
-    >
-    <script type="module">
-      import * as pdfjsLib from "./vendor/pdf.min.mjs";
-      window.pdfjsLib = pdfjsLib;
-      await import("./src/app.js");
-    </script>
-  </body>
+    <div class="stats" id="stats">
+      <div class="stat"><b id="st-current">–</b><small>Current résumés</small></div>
+      <div class="stat"><b id="st-drafts">–</b><small>Drafts</small></div>
+      <div class="stat"><b id="st-older">–</b><small>Older versions</small></div>
+      <div class="stat"><b id="st-last">–</b><small>Last edited</small></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;align-items:center">
+      <nav class="jump" aria-label="Sections"><a href="#resumes">Résumés</a><a href="#editor">Editor</a></nav>
+      <span id="syncnote">Loading…</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section id="resumes" aria-labelledby="h-res">
+      <div class="banner" id="exampleBanner" hidden>
+        <p><b>This is example data</b> for a made-up person. Click around and edit anything, then start fresh with your own résumé. Everything stays in this browser.</p>
+        <span id="freshSlot"></span>
+        <button class="btn ghost" type="button" id="hideExample">Hide</button>
+      </div>
+      <div id="impConfirm"></div>
+      <div class="sec-head"><h2 id="h-res">Send-ready résumés</h2><p>The version to send for each kind of role. Drafts and older versions are folded underneath.</p></div>
+      <div class="resumes" id="resumeCards"><div class="empty">Your current résumés will appear here.</div></div>
+      <details class="older" id="olderBox"><summary>Older versions &amp; drafts (<span id="olderCount">0</span>)</summary><div class="list" id="olderList" style="border:0"></div></details>
+      <form class="ed" id="newForm" hidden>
+        <label>Name this résumé<input id="nfTitle" placeholder="e.g. Operations, or Operations · Acme" required autocomplete="off"></label>
+        <label>What it's for<input id="nfTarget" placeholder="e.g. Operations manager roles" autocomplete="off"></label>
+        <label class="wide">Start from<select id="nfFrom"></select></label>
+        <label class="wide" id="nfPasteWrap" hidden>Your current résumé as plain text<textarea id="nfPaste" placeholder="Paste your résumé here (copy it out of a PDF or Word file). Next, you'll copy a prompt into any AI assistant, and it turns this into an editable, designed résumé."></textarea></label>
+        <div class="acts"><button class="btn primary" type="submit">Create and open</button><button class="btn" type="button" id="nfCancel">Cancel</button></div>
+      </form>
+      <div><button class="btn" type="button" id="newBtn">+ New résumé</button></div>
+    </section>
+
+    <section id="editor" aria-labelledby="h-ed">
+      <div class="sec-head"><h2 id="h-ed">Résumé editor</h2>
+        <div class="filters" id="edTabs" role="group" aria-label="Which résumé"></div>
+      </div>
+      <div class="edbar">
+        <span id="edStatus" role="status"></span>
+        <button class="btn" type="button" id="askBtn">Edit with AI</button>
+        <button class="btn" type="button" id="layoutBtn" aria-pressed="false">Edit layout</button>
+        <button class="btn" type="button" id="histBtn">History</button>
+        <label class="accent"><span>Accent</span><select id="accentSel" aria-label="Accent color"></select></label>
+        <button class="btn primary" type="button" id="pdfBtn">Download PDF</button>
+      </div>
+      <div class="panel" id="askPanel" hidden>
+        <p class="muted" style="font-size:12.5px">Works with any AI assistant. Copy the prompt, paste it into the assistant you use, then paste its whole reply back here. Nothing changes until you review and apply it.</p>
+        <label for="askText" class="eyebrow" id="askLabel">What should change?</label>
+        <textarea id="askText" placeholder="e.g. Tighten the bullets in my current role and lead with the biggest result"></textarea>
+        <div class="chips" id="askChips" role="group" aria-label="Quick requests">
+          <button class="btn" type="button" data-chip="tighten">Tighten bullets</button>
+          <button class="btn" type="button" data-chip="verbs">Stronger verbs</button>
+          <button class="btn" type="button" data-chip="results">Lead with results</button>
+          <button class="btn" type="button" data-chip="shorter">Shorter</button>
+          <button class="btn" type="button" data-chip="tailor">Tailor to a posting</button>
+          <button class="btn" type="button" data-chip="import">Import from text…</button>
+        </div>
+        <details id="postBox"><summary>Paste a job posting to tailor to (optional)</summary>
+          <label for="askPosting" class="eyebrow" style="position:absolute;left:-9999px">Job posting</label>
+          <textarea id="askPosting" placeholder="Paste the job description here"></textarea>
+        </details>
+        <div class="edbar"><button class="btn primary" type="button" id="askCopy">1 · Copy prompt</button></div>
+        <label for="askReply" class="eyebrow">2 · Paste the reply</label>
+        <textarea id="askReply" placeholder="Paste the assistant's whole reply here"></textarea>
+        <div class="edbar"><button class="btn" type="button" id="askReview">3 · Review changes</button></div>
+        <p id="askOut" aria-live="polite"></p>
+        <div id="askResult" hidden style="display:grid;gap:8px">
+          <div id="askDiff"></div>
+          <div class="edbar"><button class="btn primary" type="button" id="askApply">Apply these changes</button><button class="btn" type="button" id="askDiscard">Discard</button></div>
+        </div>
+      </div>
+      <div class="panel" id="histPanel" hidden>
+        <div class="edbar">
+          <label for="verNote" class="eyebrow" style="position:absolute;left:-9999px">Version note</label>
+          <input id="verNote" placeholder="Note for this version (optional)">
+          <button class="btn" type="button" id="verSave">Save version</button>
+        </div>
+        <div id="histList"></div>
+      </div>
+      <div id="pvBar" hidden><span id="pvText"></span><span class="edbar"><button class="btn" type="button" id="pvRestore">Restore this version</button><button class="btn" type="button" id="pvBack">Back to current</button></span></div>
+      <div class="paperwrap"><div class="paper" id="paper"></div></div>
+      <p class="muted" style="margin:0;font-size:12px" id="edHint">Click any text to edit it. Enter adds a bullet; Backspace on an empty bullet removes it. Edit layout adds or removes jobs, roles and sections. Edits save as you type, and Save version keeps a copy in History. The PDF is a clean text version that applicant-tracking systems read correctly.</p>
+    </section>
+
+  </div>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script type="application/json" id="unmplyd-example">{"app":"unmplyd","version":2,"openId":"r-ops","example":true,"lastExport":null,"resumes":[{"id":"r-ops","title":"Operations","target":"Operations manager roles","status":"current","notes":"My main résumé.","accent":"#003FCC","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-11-02T10:00:00.000Z","created":"2026-09-20T10:00:00.000Z"},{"id":"r-pm","title":"Project management","target":"Program & project manager roles","status":"current","notes":"Leads with rollouts and delivery.","accent":"#1D6B45","data":{"name":"ALEX RIVERA","title":"PROGRAM & PROJECT MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Program and project manager with nine years of operations experience. I plan and run multi-site rollouts, keep budgets and timelines honest, and get busy teams to adopt new ways of working.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Led the rollout of a new scheduling system across 12 clinics in five months, on budget.","Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Program management","text":"Rollout planning / Budgets / Risk tracking / Stakeholder updates / Change management"},{"label":"Tools","text":"Asana / Excel / Tableau / SQL basics"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-10-25T10:00:00.000Z","created":"2026-10-25T10:00:00.000Z"},{"id":"r-supply","title":"Operations · Supply chain","target":"Warehouse and supply chain roles","status":"draft","notes":"Copied from Operations. Still tailoring.","accent":"#003FCC","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER · SUPPLY CHAIN","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager who raised on-time shipments from 91% to 98% across three warehouse shifts, now running 12 clinics. Strongest where many people, shifts and handoffs have to work as one.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-11-04T10:00:00.000Z","created":"2026-11-03T10:00:00.000Z"},{"id":"r-old","title":"Operations (summer 2026)","target":"Operations manager roles","status":"older","notes":"Replaced by Operations in October.","accent":"#141414","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Experienced operations professional with a background in healthcare, logistics and retail.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"}]}]},"savedAt":"2026-07-14T10:00:00.000Z","created":"2026-06-30T10:00:00.000Z"}],"versions":[{"id":"v-1","resumeId":"r-ops","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"}]}]},"at":"2026-10-15T09:00:00.000Z","note":"Before adding the certification"},{"id":"v-2","resumeId":"r-ops","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"at":"2026-11-01T16:00:00.000Z","note":"Before adding the coaching bullet"}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  /* unmplyd: bespoke résumés you can edit and keep track of. One file, no build step.
+     Everything is saved in this browser's localStorage under KEY.
+       resumes[]  {id, title, target, status: "current"|"draft"|"older", notes, accent, data: Résumé, savedAt, created}
+       versions[] {id, resumeId, data: Résumé, at, note}
+     Résumé = {name, title, contact, summary, sections: [
+       {type:"experience", heading, entries:[{company, note, dates, roles:[{title, dates, bullets[]}], bullets[]}]},
+       {type:"groups", heading, groups:[{label, text}]},
+       {type:"lines", heading, lines:[{bold, text}]} ]} */
+  const KEY = "unmplyd:resumes:v1";
+  const FONT_R = "fonts/JetBrainsMono-Regular.ttf", FONT_B = "fonts/JetBrainsMono-Bold.ttf";
+  const STATUSES = ["current", "draft", "older"];
+  const TONE = { current: "good", draft: "warn", older: "" };
+  const ACCENTS = [["#003FCC", "Blue"], ["#141414", "Ink"], ["#1D6B45", "Forest"], ["#A3242A", "Crimson"], ["#5B3CC4", "Violet"], ["#A85700", "Amber"]];
+  const $ = (id) => document.getElementById(id);
+  function el(tag, attrs, ...kids){
+    const n = document.createElement(tag);
+    if(attrs) for(const [k, v] of Object.entries(attrs)){
+      if(v == null || v === false) continue;
+      if(k === "class") n.className = v; else if(k === "text") n.textContent = v;
+      else if(k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v); else n.setAttribute(k, v === true ? "" : v);
+    }
+    for(const k of kids.flat()){ if(k == null || k === false) continue; n.append(k.nodeType ? k : document.createTextNode(String(k))); }
+    return n;
+  }
+  function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600); }
+  function status(msg){ $("edStatus").textContent = msg; }
+  const clone = (o) => o == null ? o : JSON.parse(JSON.stringify(o));
+  const uid = (p) => (p || "") + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const nowIso = () => new Date().toISOString();
+  function getAt(o, p){ return p.reduce((a, k) => (a == null ? a : a[k]), o); }
+  function setAt(o, p, v){ const parent = getAt(o, p.slice(0, -1)); if(parent != null) parent[p[p.length - 1]] = v; }
+  const fmt = (iso) => { try { return new Date(iso).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); } catch(e){ return iso || ""; } };
+  const fmtDay = (iso) => { try { return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" }); } catch(e){ return ""; } };
+  const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function fileSafe(s){ return String(s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60) || "Resume"; }
+  function titleCase(s){ return String(s || "").toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()); }
+  function chip(text, tone){ return el("span", { class: "chip" + (tone ? " " + tone : "") }, text); }
+  function twoClick(label, confirmLabel, fn, cls){
+    const b = el("button", { class: "btn" + (cls ? " " + cls : ""), type: "button" }, label); let armed = false, t = null;
+    b.addEventListener("click", (e) => { if(!armed){ armed = true; b.textContent = confirmLabel; t = setTimeout(() => { armed = false; b.textContent = label; }, 4000); return; } clearTimeout(t); armed = false; b.textContent = label; fn(e); });
+    return b;
+  }
+  async function copyText(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch(e){ const ta = el("textarea", { style: "position:fixed;top:0;left:0;opacity:0" }); ta.value = text; document.body.append(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch(err){} ta.remove(); return ok; }
+  }
+  function saveFile(name, blob){ const a = el("a", { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
+
+  /* ---------- store ---------- */
+  function sanitize(r){
+    const s = (v) => typeof v === "string" ? v : v == null ? "" : String(v), arr = (v) => Array.isArray(v) ? v : [];
+    const out = { name: s(r && r.name), title: s(r && r.title), contact: s(r && r.contact), summary: s(r && r.summary), sections: [] };
+    for(const sec of arr(r && r.sections)){
+      if(!sec || typeof sec !== "object") continue;
+      const type = ["experience", "groups", "lines"].includes(sec.type) ? sec.type : Array.isArray(sec.entries) ? "experience" : Array.isArray(sec.groups) ? "groups" : "lines";
+      const o = { type, heading: s(sec.heading) };
+      if(type === "experience") o.entries = arr(sec.entries).map(e => {
+        const x = { company: s(e.company), note: s(e.note), dates: s(e.dates), roles: arr(e.roles).map(ro => ({ title: s(ro.title), dates: s(ro.dates), bullets: arr(ro.bullets).map(s) })), bullets: arr(e.bullets).map(s) };
+        if(e.italic) x.italic = s(e.italic);
+        if(Array.isArray(e.clients)){ x.clientsHeading = s(e.clientsHeading); x.clients = e.clients.map(c => ({ name: s(c.name), desc: s(c.desc), bullets: arr(c.bullets).map(s) })); }
+        return x;
+      });
+      if(type === "groups") o.groups = arr(sec.groups).map(g => ({ label: s(g.label), text: s(g.text) }));
+      if(type === "lines") o.lines = arr(sec.lines).map(l => ({ bold: s(l.bold), text: s(l.text) }));
+      out.sections.push(o);
+    }
+    return out;
+  }
+  function normalize(d){
+    const out = { app: "unmplyd", version: 2, resumes: [], versions: [], openId: null, example: false, lastExport: null };
+    if(!d || typeof d !== "object") return out;
+    out.openId = d.openId || null; out.example = !!d.example; out.lastExport = d.lastExport || null;
+    out.resumes = (Array.isArray(d.resumes) ? d.resumes : []).filter(r => r && r.id).map(r => ({
+      id: String(r.id), title: String(r.title || "Untitled"), target: String(r.target || ""), status: STATUSES.includes(r.status) ? r.status : "current",
+      notes: String(r.notes || ""), accent: /^#[0-9a-f]{6}$/i.test(r.accent || "") ? r.accent : ACCENTS[0][0],
+      data: sanitize(r.data), savedAt: r.savedAt || nowIso(), created: r.created || r.savedAt || nowIso() }));
+    out.versions = (Array.isArray(d.versions) ? d.versions : []).filter(v => v && v.id && v.resumeId && v.data).map(v => ({ id: String(v.id), resumeId: String(v.resumeId), data: sanitize(v.data), at: v.at || nowIso(), note: String(v.note || "") }));
+    return out;
+  }
+  function readStore(){ try { const raw = localStorage.getItem(KEY); return raw ? normalize(JSON.parse(raw)) : null; } catch(e){ return null; } }
+  function exampleData(){ try { const d = normalize(JSON.parse($("unmplyd-example").textContent)); d.example = true; return d; } catch(e){ return normalize(null); } }
+  let S = null, pending = null;
+  function persist(){ clearTimeout(pending); pending = setTimeout(flush, 500); status("Saving…"); }
+  function flush(){
+    clearTimeout(pending); pending = null;
+    try { localStorage.setItem(KEY, JSON.stringify(S)); status("All changes saved"); $("syncnote").textContent = "Saved in this browser"; }
+    catch(e){ status("Not saved: this browser blocked storage. Export a backup"); $("syncnote").textContent = "Not saved: export a backup before you close this page"; }
+    renderLibrary();
+  }
+  window.addEventListener("pagehide", () => { if(pending) flush(); });
+  document.addEventListener("visibilitychange", () => { if(document.hidden && pending) flush(); });
+  const findR = (id) => S.resumes.find(r => r.id === id);
+  const versionsOf = (id) => S.versions.filter(v => v.resumeId === id).sort((a, b) => b.at.localeCompare(a.at));
+  function snapshot(r, note, data){
+    S.versions.push({ id: uid("v"), resumeId: r.id, data: clone(data || r.data), at: nowIso(), note: note || "Saved version" });
+    const mine = S.versions.filter(v => v.resumeId === r.id).sort((a, b) => a.at.localeCompare(b.at));
+    if(mine.length > 40){ const drop = new Set(mine.slice(0, mine.length - 40).map(v => v.id)); S.versions = S.versions.filter(v => !drop.has(v.id)); }
+  }
+
+  /* ---------- editor state ---------- */
+  const E = { id: null, preview: null, layout: false, mode: "edit", proposal: null, fonts: null };
+  const cur = () => findR(E.id);
+
+  /* ---------- library ---------- */
+  function renderLibrary(){
+    const rs = S.resumes;
+    const current = rs.filter(r => r.status === "current").sort((a, b) => a.created.localeCompare(b.created));
+    const rest = rs.filter(r => r.status !== "current").sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+    $("st-current").textContent = current.length;
+    $("st-drafts").textContent = rs.filter(r => r.status === "draft").length;
+    $("st-older").textContent = rs.filter(r => r.status === "older").length;
+    const last = rs.slice().sort((a, b) => b.savedAt.localeCompare(a.savedAt))[0];
+    $("st-last").textContent = last ? fmtDay(last.savedAt) : "–";
+    $("exampleBanner").hidden = !S.example;
+    const rc = $("resumeCards");
+    if(!current.length) rc.replaceChildren(el("div", { class: "empty" }, rs.length ? "No résumé is marked current. Open one below and set its status to current in Details." : "No résumés yet. Use + New résumé to paste in the one you have, or start from a template."));
+    else rc.replaceChildren(...current.map(r => card(r)));
+    $("olderCount").textContent = rest.length;
+    $("olderList").replaceChildren(...(rest.length ? rest.map(r => row(r)) : [el("div", { class: "empty", style: "border:0" }, "No drafts or older versions yet. When you replace a résumé, set the old one to older instead of deleting it.")]));
+    renderTabs();
+  }
+  function detailsToggle(r, anchor){
+    return el("button", { class: "btn ghost", type: "button", "aria-label": "Edit details for " + r.title, onclick: (e) => {
+      const host0 = e.currentTarget.closest(".item,.rcard"); let host = host0.nextElementSibling;
+      if(host && host.classList.contains("edhost")){ host.remove(); return; }
+      host = el("div", { class: "edhost" }); host0.after(host); host.append(detailsForm(r, () => host.remove()));
+    } }, "Details");
+  }
+  function card(r){
+    return el("article", { class: "rcard", style: "border-top-color:" + r.accent },
+      el("div", { class: "row", style: "justify-content:space-between" }, el("span", { class: "track" }, r.target || "Résumé"), el("span", { class: "row" }, chip(r.status, TONE[r.status]), el("span", { class: "muted num", style: "font-size:12px" }, "Updated " + fmtDay(r.savedAt)))),
+      el("h3", null, r.title),
+      r.data.title ? el("p", { class: "muted" }, r.data.title) : null,
+      el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: () => openInEditor(r.id, true) }, "Edit in the editor"), el("button", { class: "btn", type: "button", onclick: () => downloadPdf(r) }, "Download PDF")),
+      r.notes ? el("p", null, r.notes) : null,
+      el("div", { class: "row" }, el("button", { class: "btn ghost", type: "button", onclick: () => { const n = duplicate(r); openInEditor(n.id, true); toast("Copied. Rename it in Details"); } }, "Duplicate"), detailsToggle(r)));
+  }
+  function row(r){
+    return el("div", { class: "item" },
+      el("div", { style: "display:grid;gap:4px;min-width:0" }, el("div", { class: "t" }, r.title, r.target ? el("span", { class: "muted", style: "font-weight:400" }, " · " + r.target) : null),
+        el("div", { class: "meta" }, chip(r.status, TONE[r.status]), el("span", { class: "num" }, "Updated " + fmtDay(r.savedAt)), r.notes ? el("span", null, r.notes) : null)),
+      el("div", { class: "acts" }, el("button", { class: "btn", type: "button", onclick: () => openInEditor(r.id, true) }, "Open"), el("button", { class: "btn ghost", type: "button", onclick: () => { const n = duplicate(r); openInEditor(n.id, true); } }, "Duplicate"), detailsToggle(r)));
+  }
+  function detailsForm(r, close){
+    const f = el("form", { class: "ed" });
+    const t = el("input", { value: r.title, required: true }), g = el("input", { value: r.target, placeholder: "e.g. Operations manager roles" });
+    const st = el("select", null, STATUSES.map(s => el("option", { value: s }, s === "current" ? "current (send-ready)" : s))); st.value = r.status;
+    const n = el("textarea", { placeholder: "e.g. Tailored for Acme, sent Nov 5" }); n.value = r.notes;
+    f.append(el("label", null, "Name", t), el("label", null, "What it's for", g), el("label", null, "Status", st), el("label", { class: "wide" }, "Notes", n),
+      el("div", { class: "acts" }, el("button", { class: "btn primary", type: "submit" }, "Save"), el("button", { class: "btn", type: "button", onclick: close }, "Cancel"),
+        twoClick("Delete", "Delete it and its history?", () => { S.resumes = S.resumes.filter(x => x !== r); S.versions = S.versions.filter(v => v.resumeId !== r.id); if(E.id === r.id){ E.id = null; pickDefault(); } persist(); flush(); render(); toast("Deleted"); }, "danger")));
+    f.addEventListener("submit", (e) => { e.preventDefault(); r.title = t.value.trim() || "Untitled"; r.target = g.value.trim(); r.status = st.value; r.notes = n.value.trim(); r.savedAt = nowIso(); flush(); toast("Saved"); });
+    setTimeout(() => t.focus(), 0);
+    return f;
+  }
+  function duplicate(r){
+    const n = { id: uid("r"), title: r.title + " (copy)", target: r.target, status: "draft", notes: "Copied from " + r.title + " on " + fmtDay(nowIso()) + ".", accent: r.accent, data: clone(r.data), savedAt: nowIso(), created: nowIso() };
+    S.resumes.push(n); flush(); return n;
+  }
+
+  /* new résumé */
+  const T = {
+    bullet: () => "",
+    role: () => ({ title: "Job title", dates: "Start – End", bullets: ["What you did, and what changed because of it"] }),
+    entry: () => ({ company: "Company name", note: "", dates: "Start – End", roles: [T.role()], bullets: [] }),
+    group: () => ({ label: "Skill area", text: "Skill / Skill / Skill" }),
+    line: () => ({ bold: "Name", text: "Detail" }),
+    "sec-experience": () => ({ type: "experience", heading: "EXPERIENCE", entries: [T.entry()] }),
+    "sec-groups": () => ({ type: "groups", heading: "CAPABILITIES", groups: [T.group()] }),
+    "sec-lines": () => ({ type: "lines", heading: "EDUCATION", lines: [T.line()] })
+  };
+  function blank(){ return { name: "YOUR NAME", title: "THE ROLE YOU WANT", contact: "City · you@example.com · (555) 555-5555 · yoursite.com", summary: "Two or three sentences on the work you do best and the results you're known for.", sections: [T["sec-experience"](), T["sec-groups"](), T["sec-lines"]()] }; }
+  function openNew(){
+    $("nfFrom").replaceChildren(...S.resumes.map(r => el("option", { value: "copy:" + r.id }, "A copy of “" + r.title + "”")), el("option", { value: "paste" }, "Text I paste in (converted with an AI assistant)"), el("option", { value: "blank" }, "A blank template"));
+    $("nfFrom").value = S.resumes.length ? "copy:" + (cur() || S.resumes[0]).id : "paste";
+    $("nfPasteWrap").hidden = $("nfFrom").value !== "paste";
+    $("newForm").hidden = false; $("nfTitle").focus();
+    $("newForm").scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+  }
+  $("newBtn").addEventListener("click", openNew);
+  $("newTop").addEventListener("click", openNew);
+  $("nfCancel").addEventListener("click", () => { $("newForm").hidden = true; });
+  $("nfFrom").addEventListener("change", () => { $("nfPasteWrap").hidden = $("nfFrom").value !== "paste"; });
+  $("newForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = $("nfTitle").value.trim(); if(!title) return;
+    const from = $("nfFrom").value, src = from.startsWith("copy:") ? findR(from.slice(5)) : null;
+    const r = { id: uid("r"), title, target: $("nfTarget").value.trim(), status: S.resumes.some(x => x.status === "current") ? "draft" : "current", notes: src ? "Started from " + src.title + "." : "", accent: src ? src.accent : ACCENTS[0][0], data: src ? clone(src.data) : blank(), savedAt: nowIso(), created: nowIso() };
+    S.resumes.push(r); flush();
+    const pasted = $("nfPaste").value.trim();
+    $("nfTitle").value = ""; $("nfTarget").value = ""; $("nfPaste").value = ""; $("newForm").hidden = true;
+    openInEditor(r.id, true);
+    if(from === "paste"){ openAsk("import"); if(pasted) $("askText").value = pasted; }
+  });
+
+  /* example, backup */
+  $("freshSlot").replaceWith(Object.assign(twoClick("Start fresh", "Erase the example data?", () => { S = normalize(null); E.id = null; flush(); render(); openNew(); toast("Clean slate. Add your résumé"); }, "primary"), { id: "freshSlot" }));
+  $("hideExample").addEventListener("click", () => { S.example = false; flush(); });
+  $("expBtn").addEventListener("click", () => { S.lastExport = nowIso(); flush(); const c = clone(S); c.example = false; saveFile("unmplyd-backup-" + today() + ".json", new Blob([JSON.stringify(c, null, 1)], { type: "application/json" })); toast("Backup downloaded"); });
+  $("impFile").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return;
+    let d; try { const raw = JSON.parse(await f.text()); if(!raw || !Array.isArray(raw.resumes)) throw 0; d = normalize(raw); d.example = false; } catch(err){ toast("That file isn't an unmplyd backup"); return; }
+    const host = $("impConfirm");
+    host.replaceChildren(el("div", { class: "banner warn" }, el("p", null, "“" + f.name + "” has " + d.resumes.length + " résumé" + (d.resumes.length === 1 ? "" : "s") + ". Replace everything in this browser with it? Export a backup first if you want to keep what's here."),
+      el("button", { class: "btn danger", type: "button", onclick: () => { S = d; E.id = null; host.replaceChildren(); flush(); render(); toast("Imported"); } }, "Replace everything"),
+      el("button", { class: "btn", type: "button", onclick: () => host.replaceChildren() }, "Cancel")));
+    host.scrollIntoView({ block: "nearest" });
+  });
+
+  /* ---------- the paper ---------- */
+  let PT = null;
+  function editable(tag, path, text, cls, opts, ed){
+    const n = el(tag, { class: cls || null });
+    n.textContent = text == null ? "" : String(text);
+    n.dataset.path = JSON.stringify(path);
+    if(opts && opts.ph) n.dataset.ph = opts.ph;
+    if(opts && opts.bullet) n.dataset.bullet = "1";
+    if(ed){
+      if(PT === null){ try { const t = document.createElement("span"); t.contentEditable = "plaintext-only"; PT = t.contentEditable === "plaintext-only"; } catch(e){ PT = false; } }
+      n.contentEditable = PT ? "plaintext-only" : "true"; n.spellcheck = true;
+    }
+    return n;
+  }
+  function build(d, ed, layout){
+    const X = (tag, path, text, cls, o) => editable(tag, path, text, cls, o, ed);
+    const C = (label, op, path, tpl, title) => layout ? el("button", { class: "ctl", type: "button", "data-op": op, "data-path": JSON.stringify(path), "data-tpl": tpl || null, title: title || null, "aria-label": title || label }, label) : null;
+    const bullets = (arr, path) => el("ul", null, (arr || []).map((b, i) => el("li", null, X("span", path.concat(i), b, "btxt", { bullet: true, ph: "New bullet" }), C("✕", "del", path.concat(i), null, "Remove this bullet"))));
+    const out = [];
+    out.push(el("header", { class: "phead" }, X("h1", ["name"], d.name, "pname", { ph: "YOUR NAME" }), el("div", { class: "uline", "aria-hidden": "true" }), X("p", ["title"], d.title, "ptitle", { ph: "HEADLINE" }), X("p", ["contact"], d.contact, "pcontact", { ph: "City · email · phone · link" })));
+    if(typeof d.summary === "string" && d.summary.trim()) out.push(X("p", ["summary"], d.summary, "psum", { ph: "Summary" }));
+    if(layout) out.push(el("div", { class: "ctlrow" }, C(d.summary && d.summary.trim() ? "Remove summary" : "+ Summary", "summary", ["summary"])));
+    (d.sections || []).forEach((s, si) => {
+      const sp = ["sections", si];
+      const sec = el("section", { class: "psec" }, el("div", { class: "sh" }, el("span", { class: "num" }, String(si + 1).padStart(2, "0")), X("h2", sp.concat("heading"), s.heading, null, { ph: "SECTION" }), el("span", { class: "line", "aria-hidden": "true" }),
+        layout ? el("span", { class: "ctls" }, C("↑", "up", sp, null, "Move section up"), C("↓", "down", sp, null, "Move section down"), C("✕", "del", sp, null, "Remove this section")) : null));
+      if(s.type === "experience"){
+        (s.entries || []).forEach((en, ei) => {
+          const ep = sp.concat("entries", ei);
+          const job = el("div", { class: "job" },
+            el("div", { class: "jrow" }, X("span", ep.concat("company"), en.company, "co", { ph: "COMPANY" }), (en.note || layout) ? X("span", ep.concat("note"), en.note || "", "note", { ph: "note (optional)" }) : null, X("span", ep.concat("dates"), en.dates, "dates", { ph: "Dates" })));
+          (en.roles || []).forEach((r, ri) => {
+            const rp = ep.concat("roles", ri);
+            job.append(el("div", { class: "jrow" }, X("span", rp.concat("title"), r.title, "role", { ph: "Job title" }), (r.dates || layout) ? X("span", rp.concat("dates"), r.dates || "", "dates", { ph: "dates (optional)" }) : null, C("✕ role", "del", rp, null, "Remove this role")));
+            if(r.bullets && r.bullets.length) job.append(bullets(r.bullets, rp.concat("bullets")));
+            if(layout) job.append(el("div", { class: "ctlrow" }, C("+ Bullet", "add", rp.concat("bullets"), "bullet")));
+          });
+          if(en.italic) job.append(X("p", ep.concat("italic"), en.italic, "ital"));
+          if(en.bullets && en.bullets.length) job.append(bullets(en.bullets, ep.concat("bullets")));
+          if(en.clients && en.clients.length){
+            if(en.clientsHeading) job.append(X("p", ep.concat("clientsHeading"), en.clientsHeading, "subh"));
+            en.clients.forEach((c, ci) => { const cp = ep.concat("clients", ci); job.append(el("p", { class: "client" }, X("b", cp.concat("name"), c.name), ", ", X("span", cp.concat("desc"), c.desc))); if(c.bullets && c.bullets.length) job.append(bullets(c.bullets, cp.concat("bullets"))); });
+          }
+          if(layout) job.append(el("div", { class: "ctlrow" }, C("+ Role", "add", ep.concat("roles"), "role"), C("↑", "up", ep, null, "Move up"), C("↓", "down", ep, null, "Move down"), C("Remove " + (en.company || "this job"), "del", ep, null, "Remove this job")));
+          sec.append(job);
+        });
+        if(layout) sec.append(el("div", { class: "ctlrow" }, C("+ Job", "add", sp.concat("entries"), "entry")));
+      }
+      if(s.type === "groups"){
+        (s.groups || []).forEach((g, gi) => { const gp = sp.concat("groups", gi); sec.append(el("div", { class: "grp" }, X("p", gp.concat("label"), g.label, "glabel", { ph: "Label" }), X("p", gp.concat("text"), g.text, "gtext", { ph: "Items" }), C("✕", "del", gp, null, "Remove this group"))); });
+        if(layout) sec.append(el("div", { class: "ctlrow" }, C("+ Group", "add", sp.concat("groups"), "group")));
+      }
+      if(s.type === "lines"){
+        (s.lines || []).forEach((l, li) => { const lp = sp.concat("lines", li); sec.append(el("p", { class: "pline" }, X("b", lp.concat("bold"), l.bold, null, { ph: "Name" }), " — ", X("span", lp.concat("text"), l.text, null, { ph: "Detail" }), C("✕", "del", lp, null, "Remove this line"))); });
+        if(layout) sec.append(el("div", { class: "ctlrow" }, C("+ Line", "add", sp.concat("lines"), "line")));
+      }
+      out.push(sec);
+    });
+    if(layout) out.push(el("div", { class: "ctlrow", style: "margin-top:22px" }, "Add a section:", C("+ Experience", "add", ["sections"], "sec-experience"), C("+ Skills", "add", ["sections"], "sec-groups"), C("+ List (education, awards…)", "add", ["sections"], "sec-lines")));
+    return out;
+  }
+  function render(){
+    renderTabs();
+    const p = $("paper"), r = cur();
+    const none = !r;
+    ["askBtn", "layoutBtn", "histBtn", "pdfBtn"].forEach(id => { $(id).disabled = none; });
+    $("accentSel").disabled = none;
+    if(none){ p.replaceChildren(el("div", { class: "empty" }, "Open a résumé above, or create one with + New résumé.")); $("pvBar").hidden = true; p.style.removeProperty("--p-blue"); return; }
+    const d = E.preview ? E.preview.data : r.data, ed = !E.preview, layout = ed && E.layout;
+    p.style.setProperty("--p-blue", r.accent);
+    p.classList.toggle("readonly", !ed); p.classList.toggle("layout", layout);
+    p.replaceChildren(...build(d, ed, layout));
+    $("layoutBtn").setAttribute("aria-pressed", E.layout ? "true" : "false");
+    $("accentSel").value = r.accent;
+    $("pvBar").hidden = !E.preview;
+    if(E.preview) $("pvText").textContent = "Previewing the version from " + fmt(E.preview.at) + (E.preview.note ? " · " + E.preview.note : "");
+  }
+  function renderTabs(){
+    const vis = S.resumes.filter(r => r.status !== "older" || r.id === E.id);
+    $("edTabs").replaceChildren(...vis.map(r => el("button", { class: "btn", type: "button", "data-id": r.id, "aria-pressed": r.id === E.id ? "true" : "false" }, r.title)));
+  }
+  function pickDefault(){ const r = findR(S.openId) || S.resumes.find(x => x.status === "current") || S.resumes[0]; E.id = r ? r.id : null; }
+  function openInEditor(id, scroll){
+    if(!findR(id)) return;
+    if(pending) flush();
+    E.id = id; S.openId = id; E.preview = null; E.layout = false; closeAsk(); $("histPanel").hidden = true;
+    render(); status("");
+    if(scroll) $("editor").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
+  }
+  $("edTabs").addEventListener("click", (e) => { const b = e.target.closest("button[data-id]"); if(b && b.dataset.id !== E.id) openInEditor(b.dataset.id); });
+  $("accentSel").replaceChildren(...ACCENTS.map(([v, n]) => el("option", { value: v }, n)));
+  $("accentSel").addEventListener("change", () => { const r = cur(); if(!r) return; r.accent = $("accentSel").value; r.savedAt = nowIso(); render(); persist(); });
+  $("layoutBtn").addEventListener("click", () => { E.layout = !E.layout; render(); });
+
+  /* editing */
+  function touch(){ const r = cur(); if(r){ r.savedAt = nowIso(); persist(); } }
+  function focusPath(path, opts){
+    const key = JSON.stringify(path);
+    const n = [...$("paper").querySelectorAll("[data-path]")].find(x => x.dataset.path === key || (opts && opts.prefix && x.dataset.path.startsWith(key.slice(0, -1) + ",")));
+    if(!n) return; n.focus();
+    const rg = document.createRange(); rg.selectNodeContents(n); if(!(opts && opts.select)) rg.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(rg);
+  }
+  const paper = $("paper");
+  paper.addEventListener("input", (e) => {
+    const r = cur(); if(E.preview || !r) return;
+    const n = e.target.closest && e.target.closest("[data-path]"); if(!n) return;
+    setAt(r.data, JSON.parse(n.dataset.path), n.textContent.replace(/\s*\n\s*/g, " "));
+    touch();
+  });
+  paper.addEventListener("keydown", (e) => {
+    const r = cur(); const n = e.target.closest && e.target.closest("[data-path]"); if(!n || E.preview || !r) return;
+    const path = JSON.parse(n.dataset.path);
+    if(e.key === "Enter"){
+      e.preventDefault();
+      if(n.dataset.bullet){ const ap = path.slice(0, -1), i = path[path.length - 1], arr = getAt(r.data, ap); arr.splice(i + 1, 0, ""); render(); focusPath(ap.concat(i + 1)); touch(); }
+      else n.blur();
+    } else if(e.key === "Backspace" && n.dataset.bullet && !n.textContent.trim()){
+      const ap = path.slice(0, -1), i = path[path.length - 1], arr = getAt(r.data, ap);
+      if(arr.length > 1){ e.preventDefault(); arr.splice(i, 1); render(); focusPath(ap.concat(Math.max(0, i - 1))); touch(); }
+    }
+  });
+  paper.addEventListener("paste", (e) => {
+    if(PT) return; const n = e.target.closest && e.target.closest("[data-path]"); if(!n) return;
+    e.preventDefault(); const t = (e.clipboardData && e.clipboardData.getData("text/plain")) || ""; document.execCommand("insertText", false, t.replace(/\s*\n\s*/g, " "));
+  });
+  paper.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("button.ctl"); const r = cur(); if(!b || !r || E.preview) return;
+    const op = b.dataset.op, path = JSON.parse(b.dataset.path), d = r.data; let focusTo = null;
+    if(op === "add"){ let arr = getAt(d, path); if(!Array.isArray(arr)){ arr = []; setAt(d, path, arr); } arr.push(T[b.dataset.tpl]()); focusTo = path.concat(arr.length - 1); }
+    else if(op === "summary"){ d.summary = d.summary && d.summary.trim() ? "" : "Two or three sentences on the work you do best and the results you're known for."; if(d.summary) focusTo = ["summary"]; }
+    else {
+      const ap = path.slice(0, -1), i = path[path.length - 1], arr = getAt(d, ap); if(!Array.isArray(arr)) return;
+      if(op === "del"){ const big = path.length === 2 || ap[ap.length - 1] === "entries"; if(big){ snapshot(r, "Before removing a " + (path.length === 2 ? "section" : "job")); toast("Removed. The previous version is saved in History"); } arr.splice(i, 1); }
+      if(op === "up" && i > 0) [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]];
+      if(op === "down" && i < arr.length - 1) [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]];
+    }
+    render(); touch();
+    if(focusTo) focusPath(focusTo, { prefix: true, select: true });
+  });
+
+  /* ---------- history ---------- */
+  $("histBtn").addEventListener("click", () => { const p = $("histPanel"); p.hidden = !p.hidden; if(!p.hidden){ closeAsk(); loadHistory(); } });
+  $("verSave").addEventListener("click", () => { const r = cur(); if(!r) return; snapshot(r, $("verNote").value.trim() || "Saved version"); $("verNote").value = ""; flush(); loadHistory(); toast("Version saved"); });
+  function loadHistory(){
+    const r = cur(), list = $("histList"); if(!r) return;
+    const vs = versionsOf(r.id);
+    if(!vs.length){ list.replaceChildren(el("p", { class: "muted" }, "No saved versions yet. Use Save version to keep a copy you can come back to. A version is also saved before every AI edit or restore.")); return; }
+    list.replaceChildren(...vs.map(v => el("div", { class: "hrow" },
+      el("div", { style: "min-width:0" }, el("div", { class: "t num" }, fmt(v.at)), el("div", { class: "muted", style: "font-size:12px" }, v.note || "")),
+      el("div", { class: "acts" },
+        el("button", { class: "btn ghost", type: "button", onclick: () => { E.preview = v; render(); $("editor").scrollIntoView({ block: "start" }); } }, "Preview"),
+        twoClick("Restore", "Confirm restore", () => restore(v))))));
+  }
+  function restore(v){ const r = cur(); if(!r) return; snapshot(r, "Before restoring " + fmt(v.at)); r.data = clone(v.data); E.preview = null; r.savedAt = nowIso(); flush(); render(); loadHistory(); toast("Restored. The version you replaced is in History"); }
+  $("pvBack").addEventListener("click", () => { E.preview = null; render(); });
+  $("pvRestore").addEventListener("click", () => { if(E.preview) restore(E.preview); });
+
+  /* ---------- AI edits, with any assistant ---------- */
+  const CHIPS = { tighten: "Tighten every bullet so each fits on one or two lines, without losing any facts or numbers.", verbs: "Use stronger, more specific verbs at the start of each bullet.", results: "Rewrite the bullets so each one leads with the result, keeping every fact.", shorter: "Shorten the summary and the least important bullets so the résumé takes up less space.", tailor: "Tailor the summary and bullets to the job posting below. Reorder and reword for fit; don't add anything that isn't already true." };
+  function openAsk(mode){
+    E.mode = mode === "import" ? "import" : "edit"; E.proposal = null;
+    $("askLabel").textContent = E.mode === "import" ? "Paste your current résumé as plain text" : "What should change?";
+    $("askText").placeholder = E.mode === "import" ? "Paste your whole résumé here (copy it out of a PDF or Word file)" : "e.g. Tighten the bullets in my current role and lead with the biggest result";
+    $("postBox").hidden = E.mode === "import";
+    $("askReply").value = ""; $("askOut").textContent = ""; $("askResult").hidden = true; $("askDiff").replaceChildren();
+    $("histPanel").hidden = true; $("askPanel").hidden = false; $("askText").focus();
+  }
+  function closeAsk(){ E.proposal = null; $("askPanel").hidden = true; $("askDiff").replaceChildren(); $("askResult").hidden = true; $("askOut").textContent = ""; }
+  $("askBtn").addEventListener("click", () => { if($("askPanel").hidden) openAsk("edit"); else closeAsk(); });
+  $("askChips").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-chip]"); if(!b) return;
+    if(b.dataset.chip === "import"){ openAsk("import"); $("askText").value = ""; return; }
+    if(E.mode === "import") openAsk("edit");
+    $("askText").value = CHIPS[b.dataset.chip]; if(b.dataset.chip === "tailor") $("postBox").open = true; $("askText").focus();
+  });
+  const SCHEMA = '{"name":"","title":"","contact":"","summary":"","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"","note":"","dates":"","roles":[{"title":"","dates":"","bullets":[""]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"","text":""}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"","text":""}]}]}';
+  function editPrompt(resume, request, posting){
+    return ["You are editing a résumé. The résumé is the JSON at the end of this message.",
+      "Request: " + request,
+      posting ? "Job posting to tailor to (use only facts already in the résumé):\n" + posting : "",
+      "Rules:",
+      "- Reply with ONLY the complete résumé as JSON, in exactly the same structure and keys. No commentary and no code fences.",
+      "- Never invent employers, titles, dates, clients, tools, metrics or outcomes. Keep every existing number unless the request says to remove it.",
+      "- Keep company names, dates and role titles exactly as they are unless the request explicitly asks to change them.",
+      "- Bullets stay one or two lines, start with a strong verb, past tense for past roles and present tense for current ones.",
+      "- Plain text only inside strings: no HTML, no Markdown.",
+      "Résumé JSON:", JSON.stringify(resume)].filter(Boolean).join("\n");
+  }
+  function importPrompt(text){
+    return ["Convert the résumé text below into JSON with exactly this structure:", SCHEMA, "",
+      "Rules:",
+      "- \"experience\" sections hold jobs: one entry per employer, one role per job title, bullets under the role they belong to.",
+      "- \"groups\" sections hold label/text pairs such as skills grouped by area. \"lines\" sections hold short items such as education, certifications or awards.",
+      "- Keep the résumé's own section headings, in capitals. Put the name and headline in capitals. Put location, email, phone and links in \"contact\", separated by \" · \".",
+      "- Copy the wording exactly. Don't rewrite, add or drop anything. Use \"\" for anything that isn't there.",
+      "- Reply with ONLY the JSON: no commentary and no code fences.", "",
+      "Résumé text:", text].join("\n");
+  }
+  $("askCopy").addEventListener("click", async () => {
+    const r = cur(); if(!r) return;
+    const text = $("askText").value.trim();
+    let p;
+    if(E.mode === "import"){ if(text.length < 40){ toast("Paste your résumé text first"); $("askText").focus(); return; } p = importPrompt(text); }
+    else { if(!text){ toast("Say what you'd like changed first"); $("askText").focus(); return; } p = editPrompt(r.data, text, $("askPosting").value.trim()); }
+    if(await copyText(p)) $("askOut").textContent = "Prompt copied. Paste it into your AI assistant, then paste its whole reply in step 2.";
+    else { $("askReply").value = p; $("askOut").textContent = "Your browser blocked copying, so the prompt is in the reply box. Copy it from there, then replace it with the reply."; }
+  });
+  function parseReply(t){ let s = String(t || "").trim(); const f = s.match(/```(?:json)?\s*([\s\S]*?)```/i); if(f) s = f[1].trim(); const a = s.indexOf("{"), b = s.lastIndexOf("}"); if(a < 0 || b < a) throw 0; return JSON.parse(s.slice(a, b + 1)); }
+  function flatten(o, p, out){ out = out || {}; p = p || [];
+    if(typeof o === "string"){ if(p[p.length - 1] !== "type") out[JSON.stringify(p)] = { p, v: o }; return out; }
+    if(o && typeof o === "object") for(const k of Object.keys(o)) flatten(o[k], p.concat(Array.isArray(o) ? +k : k), out);
+    return out; }
+  function label(path, d){
+    const parts = []; let c = d;
+    for(let i = 0; i < path.length; i++){
+      const k = path[i], prev = path[i - 1]; c = c == null ? c : c[k];
+      if(prev === "sections") parts.push((c && c.heading) || "Section");
+      else if(prev === "entries") parts.push((c && c.company) || "Entry");
+      else if(prev === "roles") parts.push((c && c.title) || "Role");
+      else if(prev === "clients") parts.push((c && c.name) || "Client");
+      else if(prev === "groups") parts.push((c && c.label) || "Group");
+      else if(prev === "lines") parts.push((c && c.bold) || "Line");
+      else if(prev === "bullets") parts.push("bullet " + (k + 1));
+      else if(typeof k === "string" && !["sections","entries","roles","clients","groups","bullets","lines"].includes(k)) parts.push(k === "bold" ? "name" : k);
+    }
+    return parts.join(" · ");
+  }
+  $("askReview").addEventListener("click", () => {
+    const r = cur(); if(!r) return; $("askResult").hidden = true; E.proposal = null;
+    let res; try { res = parseReply($("askReply").value); } catch(e){ $("askOut").textContent = "That reply isn't valid résumé JSON. Check you pasted the whole reply, or ask the assistant to reply with the JSON only."; return; }
+    if(!res || typeof res !== "object" || !Array.isArray(res.sections) || !res.sections.length){ $("askOut").textContent = "That doesn't look like a résumé (it has no sections). Ask the assistant to keep the same structure."; return; }
+    res = sanitize(res);
+    if(E.mode === "import"){
+      E.proposal = { data: res, note: "Before import" };
+      $("askOut").textContent = "Here's your imported résumé. Check it against the original, then apply. You can fix anything afterwards by clicking it.";
+      $("askDiff").replaceChildren(el("div", { class: "paper readonly mini", style: "--p-blue:" + r.accent }, ...build(res, false, false)));
+      $("askResult").hidden = false; return;
+    }
+    const fa = flatten(r.data), fb = flatten(res), rows = [];
+    for(const k of new Set([...Object.keys(fa), ...Object.keys(fb)])){ const x = fa[k], y = fb[k]; if(x && y && x.v === y.v) continue; if((!x && !y.v.trim()) || (!y && !x.v.trim())) continue; rows.push({ path: (y || x).p, old: x ? x.v : "", neu: y ? y.v : "" }); }
+    if(!rows.length){ $("askOut").textContent = "That reply doesn't change anything. Try a more specific request."; return; }
+    const risky = rows.filter(x => ["company", "dates", "title"].includes(x.path[x.path.length - 1]) && x.path.includes("entries") && x.old && x.neu).length;
+    E.proposal = { data: res, note: "Before AI edit: " + $("askText").value.trim().slice(0, 80) };
+    $("askOut").textContent = rows.length + (rows.length === 1 ? " change" : " changes") + " proposed. Nothing is applied until you say so.";
+    $("askDiff").replaceChildren(
+      risky ? el("p", { class: "chip warn", style: "display:block;white-space:normal" }, "Check carefully: this reply changes " + risky + " company name" + (risky === 1 ? ", date or title." : "s, dates or titles.")) : null,
+      ...rows.slice(0, 80).map(x => el("div", { class: "diffrow" }, el("div", { class: "eyebrow", style: "letter-spacing:.08em" }, label(x.path, x.neu ? res : r.data)), x.old ? el("del", null, x.old) : null, x.neu ? el("ins", null, x.neu) : el("span", { class: "muted" }, "(removed)"))),
+      rows.length > 80 ? el("p", { class: "muted" }, "…and " + (rows.length - 80) + " more.") : null);
+    $("askResult").hidden = false;
+  });
+  $("askApply").addEventListener("click", () => { const r = cur(), pr = E.proposal; if(!r || !pr) return; snapshot(r, pr.note); r.data = clone(pr.data); r.savedAt = nowIso(); flush(); render(); closeAsk(); toast("Applied. The previous version is saved in History"); });
+  $("askDiscard").addEventListener("click", () => { E.proposal = null; $("askResult").hidden = true; $("askOut").textContent = "Discarded."; });
+
+  /* ---------- PDF ---------- */
+  function b64(buf){ const u = new Uint8Array(buf); let s = ""; for(let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+  async function fonts(){
+    if(E.fonts !== null) return E.fonts;
+    try { const [r, b] = await Promise.all([FONT_R, FONT_B].map(u => fetch(u).then(x => { if(!x.ok) throw new Error("font"); return x.arrayBuffer(); }))); E.fonts = { r: b64(r), b: b64(b) }; }
+    catch(e){ E.fonts = false; } // falls back to the built-in Courier, which has the same character width
+    return E.fonts;
+  }
+  const hexRgb = (h) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  async function makePdf(d, accent){
+    const f = await fonts();
+    const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter", compress: true });
+    let FACE = "courier";
+    if(f){ doc.addFileToVFS("JBM-Regular.ttf", f.r); doc.addFont("JBM-Regular.ttf", "JBM", "normal"); doc.addFileToVFS("JBM-Bold.ttf", f.b); doc.addFont("JBM-Bold.ttf", "JBM", "bold"); FACE = "JBM"; }
+    const who = titleCase(d.name || "");
+    doc.setProperties({ title: (who ? who + " — " : "") + (d.title ? titleCase(d.title) : "Résumé"), author: who, subject: "Résumé", creator: "unmplyd" });
+    const INK = [20, 20, 20], MID = [51, 51, 49], MUTED = [94, 94, 91], BLUE = hexRgb(accent || "#003FCC"), RULE = [216, 216, 212];
+    const L = 40, R = 572, W = R - L, BOTTOM = 758; let y = 50;
+    const cw = (size) => size * 0.6; // JetBrains Mono and Courier both advance 600/1000 em
+    function font(bold, size, color){ doc.setFont(FACE, bold ? "bold" : "normal"); doc.setFontSize(size); doc.setTextColor(...color); }
+    function need(h){ if(y + h > BOTTOM){ doc.addPage(); y = 50; } }
+    function wrap(segs, maxChars){
+      const words = []; segs.forEach(s => String(s.t || "").split(/(\s+)/).forEach(t => { if(t) words.push({ t, b: !!s.b, c: s.c || MID }); }));
+      const lines = [[]]; let len = 0;
+      for(const w of words){
+        if(/^\s+$/.test(w.t)){ if(len && len + 1 <= maxChars){ lines[lines.length - 1].push({ t: " ", b: w.b, c: w.c }); len += 1; } continue; }
+        let t = w.t;
+        if(len && len + t.length > maxChars){ const c = lines[lines.length - 1]; if(c.length && c[c.length - 1].t === " ") c.pop(); lines.push([]); len = 0; }
+        while(t.length > maxChars){ lines[lines.length - 1].push({ t: t.slice(0, maxChars), b: w.b, c: w.c }); lines.push([]); t = t.slice(maxChars); }
+        lines[lines.length - 1].push({ t, b: w.b, c: w.c }); len += t.length;
+      }
+      return lines.map(line => line.reduce((acc, s) => { const p = acc[acc.length - 1]; if(p && p.b === s.b && p.c === s.c) p.t += s.t; else acc.push({ ...s }); return acc; }, []));
+    }
+    function drawLines(lines, x, size, lh){ for(const line of lines){ need(lh); let cx = x; for(const s of line){ font(s.b, size, s.c); doc.text(s.t, cx, y); cx += s.t.length * cw(size); } y += lh; } }
+    function centered(text, size, bold, color, cs){ font(bold, size, color); const w = text.length * cw(size) + Math.max(0, text.length - 1) * (cs || 0); doc.text(text, (612 - w) / 2, y, cs ? { charSpace: cs } : undefined); }
+    function centeredWrapped(text, size, bold, color, lh){ const lines = wrap([{ t: text, b: bold, c: color }], Math.floor(W / cw(size))); lines.forEach((ln, i) => { const t = ln.map(s => s.t).join(""); centered(t, size, bold, color); if(i < lines.length - 1) y += lh; }); }
+    function rightText(text, size, color){ font(false, size, color); doc.text(text, R - text.length * cw(size), y); }
+    function bulletList(arr, size, lh){
+      const x = L + 12, maxC = Math.floor((R - x) / cw(size));
+      for(const b of (arr || [])){
+        if(!String(b).trim()) continue;
+        const lines = wrap([{ t: b, c: MID }], maxC);
+        need(lh * Math.min(lines.length, 2));
+        doc.setFillColor(...BLUE); doc.rect(L + 2, y - size * 0.36, 3, 3, "F");
+        drawLines(lines, x, size, lh); y += 2.5;
+      }
+    }
+    centered(d.name || "", 22, true, INK, 2); y += 10;
+    doc.setFillColor(...BLUE); doc.rect(306 - 45, y - 2, 90, 1.8, "F"); y += 18;
+    if(d.title){ centeredWrapped(d.title, 10, true, INK, 13); y += 15; }
+    if(d.contact){ centeredWrapped(d.contact, 9, false, MUTED, 12); y += 18; }
+    if(d.summary && d.summary.trim()){
+      const lines = wrap([{ t: d.summary, c: MID }], Math.floor((W - 12) / cw(9.6))); const top = y - 10;
+      drawLines(lines, L + 12, 9.6, 13.2);
+      doc.setFillColor(...BLUE); doc.rect(L, top, 2.6, y - top - 6, "F"); y += 6;
+    }
+    (d.sections || []).forEach((s, si) => {
+      need(48); y += 8;
+      font(true, 10, BLUE); doc.text(String(si + 1).padStart(2, "0"), L, y);
+      const h = (s.heading || "").toUpperCase(); font(true, 10.5, INK); doc.text(h, L + 20, y);
+      const hw = h.length * cw(10.5); doc.setFillColor(...RULE); doc.rect(L + 20 + hw + 10, y - 3.5, Math.max(0, R - (L + 20 + hw + 10)), 0.6, "F");
+      y += 18;
+      if(s.type === "experience") (s.entries || []).forEach((en) => {
+        need(15 + 14 + 26);
+        font(true, 10.5, INK); const co = (en.company || "").toUpperCase(); doc.text(co, L, y);
+        if(en.note){ const nx = L + co.length * cw(10.5) + 9; font(false, 8.6, MUTED); if(nx + en.note.length * cw(8.6) < R - (en.dates || "").length * cw(9) - 8) doc.text(en.note, nx, y); }
+        if(en.dates) rightText(en.dates, 9, MUTED);
+        y += 15;
+        (en.roles || []).forEach((r) => {
+          need(14 + 13); font(false, 9.8, BLUE); doc.text(r.title || "", L, y); if(r.dates) rightText(r.dates, 9, MUTED); y += 13;
+          if(r.bullets && r.bullets.length) bulletList(r.bullets, 9.2, 12.4);
+        });
+        if(en.italic){ drawLines(wrap([{ t: en.italic, c: MUTED }], Math.floor(W / cw(9))), L, 9, 12.5); y += 2; }
+        bulletList(en.bullets, 9.2, 12.4);
+        if(en.clients && en.clients.length){
+          if(en.clientsHeading){ need(40); y += 3; font(true, 8.8, MUTED); doc.text(en.clientsHeading.toUpperCase(), L, y); y += 13; }
+          en.clients.forEach((c) => { need(13 + 26); drawLines(wrap([{ t: c.name, b: true, c: INK }, { t: c.desc ? ", " + c.desc : "", c: MID }], Math.floor(W / cw(9.4))), L, 9.4, 12.8); bulletList(c.bullets, 9.2, 12.4); });
+        }
+        y += 5;
+      });
+      if(s.type === "groups") (s.groups || []).forEach((g) => {
+        need(28); font(true, 9.8, INK); doc.text(g.label || "", L, y); y += 13;
+        drawLines(wrap([{ t: g.text, c: MID }], Math.floor(W / cw(9.3))), L, 9.3, 12.6); y += 6;
+      });
+      if(s.type === "lines") (s.lines || []).forEach((l) => { drawLines(wrap([{ t: l.bold, b: true, c: INK }, { t: l.text ? " — " + l.text : "", c: MID }], Math.floor(W / cw(9.4))), L, 9.4, 12.8); y += 4; });
+    });
+    return doc;
+  }
+  async function downloadPdf(r){
+    if(!r) return;
+    if(!window.jspdf || !window.jspdf.jsPDF){ toast("The PDF tool didn't load. Check your connection and reload the page"); return; }
+    if(pending) flush();
+    const d = E.preview && r.id === E.id ? E.preview.data : r.data;
+    status("Building PDF…");
+    try { const doc = await makePdf(d, r.accent); saveFile(fileSafe(titleCase(d.name)) + "_Resume_" + fileSafe(r.title) + ".pdf", doc.output("blob")); status("All changes saved"); }
+    catch(e){ status(""); toast("Couldn't build the PDF"); }
+  }
+  $("pdfBtn").addEventListener("click", () => downloadPdf(cur()));
+
+  /* ---------- boot ---------- */
+  S = readStore();
+  if(!S){ S = exampleData(); flush(); } else $("syncnote").textContent = "Saved in this browser";
+  pickDefault(); renderLibrary(); render(); status("");
+})();
+</script>
 </html>

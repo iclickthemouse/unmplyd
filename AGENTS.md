@@ -1,41 +1,31 @@
 # Working on unmplyd
 
-An industry-neutral application workspace focused on the exact résumé, letter and
-files prepared or sent for a role. Keep examples anonymous; never add personal
-search details, fixed career assumptions, or named AI providers.
+Notes for anyone, person or AI agent, changing this codebase. To use or rebuild unmplyd with an agent instead, see [SKILL.md](SKILL.md).
 
-## Architecture
+## Shape of the project
 
-- index.html is the boot shell; src/app.js owns UI/routes/onboarding/settings.
-- src/styles.css owns responsive styles. src/store.js owns versioned metadata,
-  legacy migration, immutable snapshots, IndexedDB originals, backup/restore.
-- src/documents.js owns imports, provider-neutral prompts and PDF/text exports.
-- vendor/ and fonts/ are local dependencies with their original notices.
-- npm start serves the static app; no installation or build step. npm test runs
-  dependency-free tests. tests/*.test.mjs cover state and document invariants.
-- Browser-check onboarding, role copies, AI review, history, packet/file retention,
-  backup restore, document import/export and phone layout after behavior changes.
+- `index.html` is the entire app. Keep it that way: no framework, no bundler, no build step.
+- Data lives in `localStorage` under `unmplyd:resumes:v1`. The data model is documented at the top of the script and in the README. `normalize()` fills in anything missing, so keep old backups importable when you change the model.
+- The example data comes from `scripts/build_example.py`, which writes `examples/example-backup.json` and embeds the same JSON in `<script id="unmplyd-example">`. Edit the script, not the embedded JSON.
+- PDFs are drawn with jsPDF using the bundled JetBrains Mono, and fall back to Courier. Both are 0.6em wide per character, which the layout code relies on.
 
-## Product invariants
+## Principles
 
-- Onboarding and settings are the configuration interface. No mandatory email,
-  provider, API key, fixed profession, or required number of role groups.
-- Protect the verified base résumé: tailoring creates a separate role copy.
-- AI output is ordinary draft text. Explicit comparison and review precede save.
-  Preserve earlier text in version history and respect excluded claims.
-- New applications are Lead; dates start blank. A status change is not contact.
-  Save ready packet does not imply submission. Record submission requires user
-  confirmation of date and exact documents. Never apply or send for the user.
-- Packets and file IDs are immutable. Remove references from working attachments,
-  not original bytes referenced by saved packets. Archive roles; retain history.
-- Complete backups include originals and reject missing files. Imports merge and
-  remap references instead of silently overwriting records. Preserve unknown fields
-  and original legacy keys. No fictitious migration of unavailable remote data.
-- Display save/storage failures honestly and stop stale tabs from overwriting
-  newer work. No unimplemented sync/account claims or fabricated ATS scores.
-- The local app uses no external network services. Keep import/export libraries
-  bundled locally and preserve their license notices.
+- **Keep the design.** The paper layout, type and colors are the product. Change them on purpose, and keep the screen and the PDF matching.
+- **Data stays in the browser.** No analytics, no trackers, no remote calls beyond the font and the PDF library.
+- **Stay model-agnostic.** AI edits work by copy and paste with any assistant.
+- **Never lose work.** Save a version before anything that replaces or removes content: AI apply, import, restore, or removing a section or job.
+- **No invented facts.** Keep the prompt rules against inventing employers, titles, dates, numbers or results.
 
-For maintaining a user's real workspace, read first and write only supported
-changes. Never invent facts, credentials or metrics. SKILL.md is the independent
-file-based workflow, not an automatic app integration.
+## Before you open a pull request
+
+Serve the folder (`python3 -m http.server`) and check:
+
+1. First load shows the example résumés, and **Start fresh** clears them.
+2. **+ New résumé** from pasted text: copy the import prompt, paste back a JSON reply, preview it, apply it.
+3. Edit a bullet, press Enter for a new one, add and remove a job with **Edit layout**, then reload. Everything is still there.
+4. **Edit with AI**: paste back a reply wrapped in a code fence, review the changes, apply. A version appears in **History**, and Preview and Restore both work.
+5. Change the accent, then download a PDF. It uses the accent, the text extracts cleanly with `pdftotext`, and a typical résumé fits on one or two pages.
+6. Change a status in Details, duplicate a résumé, and delete one.
+7. Export a backup, start fresh, import the backup, and check everything is back.
+8. At 390px wide there's no horizontal scrolling, and dark mode is readable.

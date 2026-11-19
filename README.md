@@ -1,151 +1,110 @@
 # unmplyd
 
-**A place for every version.** A private application workspace for the résumé you
-started with, the copy you tailored, the cover letter you wrote, and the exact
-documents you chose for each role. Any occupation, industry, or AI assistant.
+**Bespoke résumés you can edit on the page, and keep track of.**
 
-![Workspace overview](docs/screenshot.png)
+unmplyd is a single HTML file. Your résumé appears as a designed page: click any text to change it, and download a clean PDF when you're done. Keep one résumé for each kind of role, make tailored copies, and keep every version, so you always know which one is current and can go back to an older one.
 
-## Start here
+![The résumé library](docs/screenshot.png)
 
-    git clone https://github.com/iclickthemouse/unmplyd.git
-    cd unmplyd
-    node scripts/serve.mjs
-    # open http://localhost:8000
+## What you get
 
-Requires a recent Node.js release (20+). No package installation, framework build,
-account, API key, or configuration file.
+- **A designed résumé that you edit directly.** No forms and no templates to fill in. Click the text on the page and type. Enter adds a bullet; Backspace on an empty bullet removes it.
+- **Edit layout** adds or removes jobs, roles, bullets and sections, and moves them up or down.
+- **A résumé library.** Current résumés sit up top, one for each kind of role. Drafts and older versions are folded underneath. Duplicate one to make a tailored copy, and use Details to name it, say what it's for, set its status and add notes.
+- **Version history** for every résumé. Save a version whenever you like. A version is also saved automatically before any AI edit, restore, or removal of a section or job. Preview any version and restore it in one click.
+- **Accent colors**, so each résumé can have its own look.
+- **Clean PDFs** in JetBrains Mono that applicant-tracking systems read correctly.
+- **AI edits with any assistant.** No account or API key needed (see below).
+- **Private.** Everything is saved in your browser. Export a backup file whenever you like.
 
-**Windows:** double-click `start.cmd`, or run `npm.cmd start` in PowerShell.
-If PowerShell reports that `npm.ps1` is blocked, use `npm.cmd` rather than changing
-the system execution policy. `node scripts/serve.mjs` also works directly.
-On other platforms, `npm start` remains available.
+![The editor](docs/editor.png)
 
-Alternatively serve the repository using Python 3:
+## Get started
 
-    python3 -m http.server 8000 --bind 127.0.0.1
+**Just open it.** Download the repository and open `index.html` in your browser. It starts with example résumés for a made-up person. Look around, then click **Start fresh**.
 
-Use a local HTTP server, not a file:// URL. The app can also run on ordinary
-static HTTPS hosting. Use the same browser profile and origin to keep accessing
-its local workspace; changing ports, hostnames, or browsers creates another store.
+**Or serve it.** Serving the folder lets PDFs use the bundled JetBrains Mono font (opened straight from disk, they fall back to Courier, with the same layout):
 
-## Guided setup, then an actual workspace
+```bash
+git clone https://github.com/iclickthemouse/unmplyd.git
+cd unmplyd
+python3 -m http.server 8000
+# open http://localhost:8000
+```
 
-1. **Make it yours.** Name the workspace; optionally add your name and headline.
-2. **Bring your base résumé.** Import PDF, Word (.docx), Markdown, text, or a
-   legacy résumé JSON file. Review the extracted text, or skip and add it later.
-3. **Choose how you work.** Set optional role groups and writing preferences.
+**Or host your own copy.** Fork the repo and turn on GitHub Pages (Settings → Pages → Deploy from branch → `main`). Your data still stays in your own browser.
 
-Setup progress saves as you go. Profile details, groups, writing preferences and
-excluded claims remain editable in **Workspace settings**. No source edits needed.
+To add your résumé, click **+ New résumé**, choose *Text I paste in*, and paste your current résumé. The next step turns it into an editable, designed page, using any AI assistant.
 
-![Guided onboarding](docs/onboarding.png)
+## Editing with AI
 
-| Workspace | What you can do |
-|---|---|
-| Overview | See your pipeline, interviews, due follow-ups, tasks, documents and recent packets. |
-| Applications | Board or list view; filter by stage/group; search roles and notes; archive without losing history. |
-| Role workspace | Keep the posting, contacts/notes, dates, follow-up, résumé copy, letter, attachments and saved packets together. |
-| Documents | Keep a verified base, create role copies, edit plain text, save named versions, preview/restore history, export PDF or text. |
-| Cover letters | Write or paste a draft, review AI revisions, save named versions, restore an earlier letter and export PDF. |
-| Tasks | Add next steps, due dates and related applications; retain completed items. |
-| Settings | Update preferences; export a full backup or merge one without overwriting existing records. |
+unmplyd isn't tied to any AI model or company. It works by copy and paste:
 
-## Tailor without losing your place
+1. Click **Edit with AI**. Say what you want, or pick a quick request: *Tighten bullets*, *Stronger verbs*, *Lead with results*, *Shorter*, or *Tailor to a posting* (paste the job description).
+2. Click **Copy prompt** and paste it into whatever AI assistant you use, such as Claude.
+3. Paste its whole reply back in and click **Review changes**.
 
-Open an application, choose **Documents**, and create a role-specific copy from a
-base résumé. The base stays unchanged. **Tailor with AI** builds a factual prompt
-from your résumé, role description and preferences. Copy it into any assistant,
-paste its proposed plain-text draft back, compare it with the current version,
-then save after review. No JSON response required. Cover letters work the same way.
+You see every change, old next to new, before anything is applied. The prompt tells the assistant never to invent employers, titles, dates, numbers or results. The review flags any reply that changes a company name, date or job title anyway. Applying saves the previous version to History first.
 
-No model is called by the app. No hidden matching/ATS scores. Review facts,
-names, dates and claims yourself. The prompt asks for separate changes/questions;
-paste only the document text back into the draft field.
+## Rebuild it with an AI agent: SKILL.md
 
-## Ready is different from submitted
+[`SKILL.md`](SKILL.md) describes unmplyd completely: the résumé format, the design, the editing behavior, version tracking and PDF export. An AI agent can use it to:
 
-**Save ready packet** freezes the chosen résumé text, letter and attachment IDs.
-It does not change application status. **Record submission** asks when you
-actually applied and confirms which documents you sent, then saves a separate
-submission record. New applications start as Lead with blank submission/contact
-dates. Status changes never manufacture contact dates.
+- convert someone's résumé into an import file for this app,
+- rebuild the whole tool from scratch without this repository, or
+- make designed résumé files and keep versions in plain folders.
 
-Later edits cannot change an earlier packet. Removing a file from the working
-kit leaves its saved packet copy available. Export individual packets with their
-file bytes or export the complete workspace. Archiving a role retains everything.
+Put it in your agent's skills folder (as `unmplyd/SKILL.md`), or paste it into a chat with any assistant.
 
-![Application board](docs/applications.png)
+## Your data
 
-## Your data and files
+- Everything is saved in your browser's local storage on this device. Nothing is uploaded.
+- Clearing your browser data erases it, so use **Export backup** now and then. Importing that file in another browser or on another computer brings everything across.
+- The page loads its font from Google Fonts and the PDF library ([jsPDF](https://github.com/parallax/jsPDF)) from cdnjs. Neither receives any of your data.
 
-Metadata lives in localStorage; original attachments live in IndexedDB. Everything
-stays in this browser profile. There is no account server, encryption at rest,
-automatic cloud backup, or cross-device synchronization. Other people using the
-same browser profile can access it, and clearing site data removes it.
+## Backup format
 
-**Export full backup** includes documents, version history, application packets,
-tasks, settings, migrated collections and all original attached files. Missing
-file bytes cause an explicit error instead of silently producing an incomplete
-backup. Keep backups privately. Restore merges records and remaps conflicting IDs
-instead of overwriting current work; changed duplicates become separate copies.
+```js
+{
+  "app": "unmplyd", "version": 2,
+  "resumes":  [ { "id", "title", "target", "status": "current" | "draft" | "older", "notes", "accent": "#003FCC", "data": Résumé, "savedAt", "created" } ],
+  "versions": [ { "id", "resumeId", "data": Résumé, "at", "note" } ]
+}
+```
 
-If another tab saves changes, editing stops in the older tab until it reloads;
-that tab can export its own copy first. Storage failures are visible, not reported
-as successful saves. Avoid deleting browser data until you have a verified backup.
+A `Résumé` is `{ name, title, contact, summary, sections }`, with three kinds of section:
 
-## Imports, exports and offline assets
+```js
+{ "type": "experience", "heading": "EXPERIENCE",   "entries": [ { "company", "note", "dates", "roles": [ { "title", "dates", "bullets": [] } ], "bullets": [] } ] }
+{ "type": "groups",     "heading": "CAPABILITIES", "groups":  [ { "label", "text" } ] }
+{ "type": "lines",      "heading": "EDUCATION",    "lines":   [ { "bold", "text" } ] }
+```
 
-- PDF, Word, Markdown and text imports become editable plain-text masters;
-  layout and reading order need review. Scanned PDFs with no text require OCR
-  elsewhere or pasted text; no content is fabricated.
-- Résumé and letter PDFs contain selectable text and wrap onto multiple pages.
-  The standard PDF font normalizes common punctuation and may replace unsupported
-  characters; inspect names, non-Latin text and layout before sending.
-- Attachment files are preserved as their original bytes, even when the editable
-  text version has a different layout. File uploads are limited to 20 MB each.
-- PDF export/import, Word import, fonts and scripts are bundled locally. No CDN
-  or AI service is contacted. Static hosting still serves those local assets.
+See [`examples/example-backup.json`](examples/example-backup.json) for a full example.
 
-## Existing workspaces
+## Project layout
 
-The earlier document-store format is migrated on first open at the same origin.
-Original browser keys and raw collections stay intact. Résumés, previous
-versions, applications, packets, materials and tasks are preserved. Placeholder
-demo data is archived rather than counted as real work. Available saved legacy
-configuration is preserved, including retired claims and links. Configuration
-that existed only inside a personally edited old HTML file cannot be recovered
-from browser storage; keep that file/backup if you customized it.
+```
+index.html                  the whole app: HTML, CSS and JavaScript in one file
+SKILL.md                    the full spec, for AI agents
+fonts/                      JetBrains Mono, embedded in PDFs
+examples/                   the example data, as an importable backup
+scripts/build_example.py    rebuilds the example data and embeds it in index.html
+docs/                       screenshots
+```
 
-Earlier remote-host adapters are not part of this local workspace. Export data
-from the host before switching; no automatic remote service migration is claimed.
+There's no build step. Edit `index.html` and reload.
 
-## Skill-only alternative
+## Contributing
 
-Download [SKILL.md](SKILL.md) and attach it to an assistant or paste its contents:
-**“Use these instructions to organize my applications in my chosen private
-folder. Start with my base résumé and this role description.”**
+Issues and pull requests are welcome. Please keep it a single file with no build step and no tracking, and run through the checks in [AGENTS.md](AGENTS.md) first.
 
-It maintains role folders, versioned drafts, a manifest and exact submission
-snapshots without this app or repository installation. File access is optional:
-without it the assistant returns files for you to save. The skill's folder
-workflow does not automatically sync with this app.
+## Credits
 
-## Development
+- Designed and built with [Claude](https://claude.ai)
+- PDF export: [jsPDF](https://github.com/parallax/jsPDF) (MIT)
+- Font: [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (SIL Open Font License 1.1, see `fonts/OFL.txt`)
 
-    npm test
-    npm run dev
+## License
 
-20 unit tests cover state validation, storage errors, migration, immutable
-snapshots, backup/reference merging, prompt guardrails, import errors and PDF
-pagination. Browser verification covers onboarding, role copying, draft review,
-packets/file retention, actual backup restore, PDF export/import, and phone layout.
-See [AGENTS.md](AGENTS.md) and [inventory](docs/INVENTORY.md).
-
-## Credits and license
-
-MIT, see [LICENSE](LICENSE). Third-party notices retained in vendor/ and fonts/:
-[jsPDF](https://github.com/parallax/jsPDF),
-[PDF.js](https://github.com/mozilla/pdf.js),
-[Mammoth](https://github.com/mwilliamson/mammoth.js),
-[JetBrains Mono](https://www.jetbrains.com/lp/mono/).
+MIT. See [LICENSE](LICENSE).

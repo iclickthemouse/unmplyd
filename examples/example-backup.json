@@ -1,0 +1,639 @@
+{
+ "app": "unmplyd",
+ "version": 2,
+ "openId": "r-ops",
+ "example": true,
+ "lastExport": null,
+ "resumes": [
+  {
+   "id": "r-ops",
+   "title": "Operations",
+   "target": "Operations manager roles",
+   "status": "current",
+   "notes": "My main résumé.",
+   "accent": "#003FCC",
+   "data": {
+    "name": "ALEX RIVERA",
+    "title": "OPERATIONS MANAGER",
+    "contact": "Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example",
+    "summary": "Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.",
+    "sections": [
+     {
+      "type": "experience",
+      "heading": "EXPERIENCE",
+      "entries": [
+       {
+        "company": "Meridian Clinics",
+        "note": "12 locations",
+        "dates": "Mar 2022 – Present",
+        "roles": [
+         {
+          "title": "Operations Manager",
+          "dates": "",
+          "bullets": [
+           "Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.",
+           "Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.",
+           "Rolled out a new scheduling system across all 12 sites in five months, on budget.",
+           "Hired and coached six clinic leads; four have since been promoted."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Northstar Supply",
+        "note": "",
+        "dates": "Jun 2018 – Feb 2022",
+        "roles": [
+         {
+          "title": "Operations Supervisor",
+          "dates": "Jan 2020 – Feb 2022",
+          "bullets": [
+           "Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.",
+           "Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."
+          ]
+         },
+         {
+          "title": "Operations Coordinator",
+          "dates": "Jun 2018 – Dec 2019",
+          "bullets": [
+           "Built the inventory reports leadership used for weekly planning."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Corner Market Co.",
+        "note": "",
+        "dates": "Aug 2015 – May 2018",
+        "roles": [
+         {
+          "title": "Assistant Store Manager",
+          "dates": "",
+          "bullets": [
+           "Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."
+          ]
+         }
+        ],
+        "bullets": []
+       }
+      ]
+     },
+     {
+      "type": "groups",
+      "heading": "CAPABILITIES",
+      "groups": [
+       {
+        "label": "Operations",
+        "text": "Process improvement / Budgeting / Scheduling / Vendor management / KPIs"
+       },
+       {
+        "label": "Tools",
+        "text": "Excel / Tableau / SQL basics / Asana"
+       }
+      ]
+     },
+     {
+      "type": "lines",
+      "heading": "EDUCATION",
+      "lines": [
+       {
+        "bold": "State University",
+        "text": "B.S., Business Administration"
+       },
+       {
+        "bold": "Lean Six Sigma Green Belt",
+        "text": "2021"
+       }
+      ]
+     }
+    ]
+   },
+   "savedAt": "2026-11-02T10:00:00.000Z",
+   "created": "2026-09-20T10:00:00.000Z"
+  },
+  {
+   "id": "r-pm",
+   "title": "Project management",
+   "target": "Program & project manager roles",
+   "status": "current",
+   "notes": "Leads with rollouts and delivery.",
+   "accent": "#1D6B45",
+   "data": {
+    "name": "ALEX RIVERA",
+    "title": "PROGRAM & PROJECT MANAGER",
+    "contact": "Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example",
+    "summary": "Program and project manager with nine years of operations experience. I plan and run multi-site rollouts, keep budgets and timelines honest, and get busy teams to adopt new ways of working.",
+    "sections": [
+     {
+      "type": "experience",
+      "heading": "EXPERIENCE",
+      "entries": [
+       {
+        "company": "Meridian Clinics",
+        "note": "12 locations",
+        "dates": "Mar 2022 – Present",
+        "roles": [
+         {
+          "title": "Operations Manager",
+          "dates": "",
+          "bullets": [
+           "Led the rollout of a new scheduling system across 12 clinics in five months, on budget.",
+           "Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.",
+           "Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Northstar Supply",
+        "note": "",
+        "dates": "Jun 2018 – Feb 2022",
+        "roles": [
+         {
+          "title": "Operations Supervisor",
+          "dates": "Jan 2020 – Feb 2022",
+          "bullets": [
+           "Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.",
+           "Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."
+          ]
+         },
+         {
+          "title": "Operations Coordinator",
+          "dates": "Jun 2018 – Dec 2019",
+          "bullets": [
+           "Built the inventory reports leadership used for weekly planning."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Corner Market Co.",
+        "note": "",
+        "dates": "Aug 2015 – May 2018",
+        "roles": [
+         {
+          "title": "Assistant Store Manager",
+          "dates": "",
+          "bullets": [
+           "Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."
+          ]
+         }
+        ],
+        "bullets": []
+       }
+      ]
+     },
+     {
+      "type": "groups",
+      "heading": "CAPABILITIES",
+      "groups": [
+       {
+        "label": "Program management",
+        "text": "Rollout planning / Budgets / Risk tracking / Stakeholder updates / Change management"
+       },
+       {
+        "label": "Tools",
+        "text": "Asana / Excel / Tableau / SQL basics"
+       }
+      ]
+     },
+     {
+      "type": "lines",
+      "heading": "EDUCATION",
+      "lines": [
+       {
+        "bold": "State University",
+        "text": "B.S., Business Administration"
+       },
+       {
+        "bold": "Lean Six Sigma Green Belt",
+        "text": "2021"
+       }
+      ]
+     }
+    ]
+   },
+   "savedAt": "2026-10-25T10:00:00.000Z",
+   "created": "2026-10-25T10:00:00.000Z"
+  },
+  {
+   "id": "r-supply",
+   "title": "Operations · Supply chain",
+   "target": "Warehouse and supply chain roles",
+   "status": "draft",
+   "notes": "Copied from Operations. Still tailoring.",
+   "accent": "#003FCC",
+   "data": {
+    "name": "ALEX RIVERA",
+    "title": "OPERATIONS MANAGER · SUPPLY CHAIN",
+    "contact": "Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example",
+    "summary": "Operations manager who raised on-time shipments from 91% to 98% across three warehouse shifts, now running 12 clinics. Strongest where many people, shifts and handoffs have to work as one.",
+    "sections": [
+     {
+      "type": "experience",
+      "heading": "EXPERIENCE",
+      "entries": [
+       {
+        "company": "Meridian Clinics",
+        "note": "12 locations",
+        "dates": "Mar 2022 – Present",
+        "roles": [
+         {
+          "title": "Operations Manager",
+          "dates": "",
+          "bullets": [
+           "Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.",
+           "Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.",
+           "Rolled out a new scheduling system across all 12 sites in five months, on budget.",
+           "Hired and coached six clinic leads; four have since been promoted."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Northstar Supply",
+        "note": "",
+        "dates": "Jun 2018 – Feb 2022",
+        "roles": [
+         {
+          "title": "Operations Supervisor",
+          "dates": "Jan 2020 – Feb 2022",
+          "bullets": [
+           "Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.",
+           "Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."
+          ]
+         },
+         {
+          "title": "Operations Coordinator",
+          "dates": "Jun 2018 – Dec 2019",
+          "bullets": [
+           "Built the inventory reports leadership used for weekly planning."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Corner Market Co.",
+        "note": "",
+        "dates": "Aug 2015 – May 2018",
+        "roles": [
+         {
+          "title": "Assistant Store Manager",
+          "dates": "",
+          "bullets": [
+           "Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."
+          ]
+         }
+        ],
+        "bullets": []
+       }
+      ]
+     },
+     {
+      "type": "groups",
+      "heading": "CAPABILITIES",
+      "groups": [
+       {
+        "label": "Operations",
+        "text": "Process improvement / Budgeting / Scheduling / Vendor management / KPIs"
+       },
+       {
+        "label": "Tools",
+        "text": "Excel / Tableau / SQL basics / Asana"
+       }
+      ]
+     },
+     {
+      "type": "lines",
+      "heading": "EDUCATION",
+      "lines": [
+       {
+        "bold": "State University",
+        "text": "B.S., Business Administration"
+       },
+       {
+        "bold": "Lean Six Sigma Green Belt",
+        "text": "2021"
+       }
+      ]
+     }
+    ]
+   },
+   "savedAt": "2026-11-04T10:00:00.000Z",
+   "created": "2026-11-03T10:00:00.000Z"
+  },
+  {
+   "id": "r-old",
+   "title": "Operations (summer 2026)",
+   "target": "Operations manager roles",
+   "status": "older",
+   "notes": "Replaced by Operations in October.",
+   "accent": "#141414",
+   "data": {
+    "name": "ALEX RIVERA",
+    "title": "OPERATIONS MANAGER",
+    "contact": "Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example",
+    "summary": "Experienced operations professional with a background in healthcare, logistics and retail.",
+    "sections": [
+     {
+      "type": "experience",
+      "heading": "EXPERIENCE",
+      "entries": [
+       {
+        "company": "Meridian Clinics",
+        "note": "12 locations",
+        "dates": "Mar 2022 – Present",
+        "roles": [
+         {
+          "title": "Operations Manager",
+          "dates": "",
+          "bullets": [
+           "Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.",
+           "Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Northstar Supply",
+        "note": "",
+        "dates": "Jun 2018 – Feb 2022",
+        "roles": [
+         {
+          "title": "Operations Supervisor",
+          "dates": "Jan 2020 – Feb 2022",
+          "bullets": [
+           "Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.",
+           "Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."
+          ]
+         },
+         {
+          "title": "Operations Coordinator",
+          "dates": "Jun 2018 – Dec 2019",
+          "bullets": [
+           "Built the inventory reports leadership used for weekly planning."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Corner Market Co.",
+        "note": "",
+        "dates": "Aug 2015 – May 2018",
+        "roles": [
+         {
+          "title": "Assistant Store Manager",
+          "dates": "",
+          "bullets": [
+           "Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."
+          ]
+         }
+        ],
+        "bullets": []
+       }
+      ]
+     },
+     {
+      "type": "groups",
+      "heading": "CAPABILITIES",
+      "groups": [
+       {
+        "label": "Operations",
+        "text": "Process improvement / Budgeting / Scheduling / Vendor management / KPIs"
+       },
+       {
+        "label": "Tools",
+        "text": "Excel / Tableau / SQL basics / Asana"
+       }
+      ]
+     },
+     {
+      "type": "lines",
+      "heading": "EDUCATION",
+      "lines": [
+       {
+        "bold": "State University",
+        "text": "B.S., Business Administration"
+       }
+      ]
+     }
+    ]
+   },
+   "savedAt": "2026-07-14T10:00:00.000Z",
+   "created": "2026-06-30T10:00:00.000Z"
+  }
+ ],
+ "versions": [
+  {
+   "id": "v-1",
+   "resumeId": "r-ops",
+   "data": {
+    "name": "ALEX RIVERA",
+    "title": "OPERATIONS MANAGER",
+    "contact": "Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example",
+    "summary": "Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.",
+    "sections": [
+     {
+      "type": "experience",
+      "heading": "EXPERIENCE",
+      "entries": [
+       {
+        "company": "Meridian Clinics",
+        "note": "12 locations",
+        "dates": "Mar 2022 – Present",
+        "roles": [
+         {
+          "title": "Operations Manager",
+          "dates": "",
+          "bullets": [
+           "Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.",
+           "Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.",
+           "Rolled out a new scheduling system across all 12 sites in five months, on budget.",
+           "Hired and coached six clinic leads; four have since been promoted."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Northstar Supply",
+        "note": "",
+        "dates": "Jun 2018 – Feb 2022",
+        "roles": [
+         {
+          "title": "Operations Supervisor",
+          "dates": "Jan 2020 – Feb 2022",
+          "bullets": [
+           "Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.",
+           "Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."
+          ]
+         },
+         {
+          "title": "Operations Coordinator",
+          "dates": "Jun 2018 – Dec 2019",
+          "bullets": [
+           "Built the inventory reports leadership used for weekly planning."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Corner Market Co.",
+        "note": "",
+        "dates": "Aug 2015 – May 2018",
+        "roles": [
+         {
+          "title": "Assistant Store Manager",
+          "dates": "",
+          "bullets": [
+           "Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."
+          ]
+         }
+        ],
+        "bullets": []
+       }
+      ]
+     },
+     {
+      "type": "groups",
+      "heading": "CAPABILITIES",
+      "groups": [
+       {
+        "label": "Operations",
+        "text": "Process improvement / Budgeting / Scheduling / Vendor management / KPIs"
+       },
+       {
+        "label": "Tools",
+        "text": "Excel / Tableau / SQL basics / Asana"
+       }
+      ]
+     },
+     {
+      "type": "lines",
+      "heading": "EDUCATION",
+      "lines": [
+       {
+        "bold": "State University",
+        "text": "B.S., Business Administration"
+       }
+      ]
+     }
+    ]
+   },
+   "at": "2026-10-15T09:00:00.000Z",
+   "note": "Before adding the certification"
+  },
+  {
+   "id": "v-2",
+   "resumeId": "r-ops",
+   "data": {
+    "name": "ALEX RIVERA",
+    "title": "OPERATIONS MANAGER",
+    "contact": "Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example",
+    "summary": "Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.",
+    "sections": [
+     {
+      "type": "experience",
+      "heading": "EXPERIENCE",
+      "entries": [
+       {
+        "company": "Meridian Clinics",
+        "note": "12 locations",
+        "dates": "Mar 2022 – Present",
+        "roles": [
+         {
+          "title": "Operations Manager",
+          "dates": "",
+          "bullets": [
+           "Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.",
+           "Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.",
+           "Rolled out a new scheduling system across all 12 sites in five months, on budget."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Northstar Supply",
+        "note": "",
+        "dates": "Jun 2018 – Feb 2022",
+        "roles": [
+         {
+          "title": "Operations Supervisor",
+          "dates": "Jan 2020 – Feb 2022",
+          "bullets": [
+           "Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.",
+           "Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."
+          ]
+         },
+         {
+          "title": "Operations Coordinator",
+          "dates": "Jun 2018 – Dec 2019",
+          "bullets": [
+           "Built the inventory reports leadership used for weekly planning."
+          ]
+         }
+        ],
+        "bullets": []
+       },
+       {
+        "company": "Corner Market Co.",
+        "note": "",
+        "dates": "Aug 2015 – May 2018",
+        "roles": [
+         {
+          "title": "Assistant Store Manager",
+          "dates": "",
+          "bullets": [
+           "Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."
+          ]
+         }
+        ],
+        "bullets": []
+       }
+      ]
+     },
+     {
+      "type": "groups",
+      "heading": "CAPABILITIES",
+      "groups": [
+       {
+        "label": "Operations",
+        "text": "Process improvement / Budgeting / Scheduling / Vendor management / KPIs"
+       },
+       {
+        "label": "Tools",
+        "text": "Excel / Tableau / SQL basics / Asana"
+       }
+      ]
+     },
+     {
+      "type": "lines",
+      "heading": "EDUCATION",
+      "lines": [
+       {
+        "bold": "State University",
+        "text": "B.S., Business Administration"
+       },
+       {
+        "bold": "Lean Six Sigma Green Belt",
+        "text": "2021"
+       }
+      ]
+     }
+    ]
+   },
+   "at": "2026-11-01T16:00:00.000Z",
+   "note": "Before adding the coaching bullet"
+  }
+ ]
+}
