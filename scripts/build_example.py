@@ -37,7 +37,8 @@ OPS = {
             {"bold": "Lean Six Sigma Green Belt", "text": "2021"}]}]}
 
 PM = copy.deepcopy(OPS)
-PM["title"] = "PROGRAM & PROJECT MANAGER"
+PM["name"] = "Alex Rivera"
+PM["title"] = "Program & Project Manager"
 PM["summary"] = "Program and project manager with nine years of operations experience. I plan and run multi-site rollouts, keep budgets and timelines honest, and get busy teams to adopt new ways of working."
 PM["sections"][0]["entries"][0]["roles"][0]["bullets"] = [
     "Led the rollout of a new scheduling system across 12 clinics in five months, on budget.",
@@ -60,13 +61,20 @@ OPS_V2 = copy.deepcopy(OPS); OPS_V2["sections"][0]["entries"][0]["roles"][0]["bu
 
 def ts(day, hour=10): return f"2026-{day}T{hour:02d}:00:00.000Z"
 
+# Designs use unmplyd's standard options. The PM résumé shows the "Corpo slop" preset.
+UNMPLYD = {"preset": "unmplyd", "font": "mono", "accent": "#003FCC", "nameCase": "upper", "nameAlign": "center", "nameSpacing": "wide", "nameBar": True,
+           "headings": "numbered", "bullets": "square", "summaryBar": True, "companyCaps": True, "skills": "stacked"}
+CORPO = {"preset": "corpo", "font": "serif", "accent": "#000000", "nameCase": "asis", "nameAlign": "center", "nameSpacing": "normal", "nameBar": False,
+         "headings": "rule", "bullets": "round", "summaryBar": False, "companyCaps": False, "skills": "inline"}
+def design(base, **kw): d = dict(base); d.update(kw); return d
+
 data = {
     "app": "unmplyd", "version": 2, "openId": "r-ops", "example": True, "lastExport": None,
     "resumes": [
-        {"id": "r-ops", "title": "Operations", "target": "Operations manager roles", "status": "current", "notes": "My main résumé.", "accent": "#003FCC", "data": OPS, "savedAt": ts("11-02"), "created": ts("09-20")},
-        {"id": "r-pm", "title": "Project management", "target": "Program & project manager roles", "status": "current", "notes": "Leads with rollouts and delivery.", "accent": "#1D6B45", "data": PM, "savedAt": ts("10-25"), "created": ts("10-25")},
-        {"id": "r-supply", "title": "Operations · Supply chain", "target": "Warehouse and supply chain roles", "status": "draft", "notes": "Copied from Operations. Still tailoring.", "accent": "#003FCC", "data": SUPPLY, "savedAt": ts("11-04"), "created": ts("11-03")},
-        {"id": "r-old", "title": "Operations (summer 2026)", "target": "Operations manager roles", "status": "older", "notes": "Replaced by Operations in October.", "accent": "#141414", "data": OLD, "savedAt": ts("07-14"), "created": ts("06-30")}],
+        {"id": "r-ops", "title": "Operations", "target": "Operations manager roles", "status": "current", "notes": "My main résumé.", "design": design(UNMPLYD), "data": OPS, "savedAt": ts("11-02"), "created": ts("09-20")},
+        {"id": "r-pm", "title": "Project management", "target": "Program & project manager roles", "status": "current", "notes": "Leads with rollouts and delivery. Plain Times New Roman for conservative companies.", "design": design(CORPO), "data": PM, "savedAt": ts("10-25"), "created": ts("10-25")},
+        {"id": "r-supply", "title": "Operations · Supply chain", "target": "Warehouse and supply chain roles", "status": "draft", "notes": "Copied from Operations. Still tailoring.", "design": design(UNMPLYD, accent="#1D6B45", preset="custom"), "data": SUPPLY, "savedAt": ts("11-04"), "created": ts("11-03")},
+        {"id": "r-old", "title": "Operations (summer 2026)", "target": "Operations manager roles", "status": "older", "notes": "Replaced by Operations in October.", "design": design(UNMPLYD, accent="#141414", preset="custom"), "data": OLD, "savedAt": ts("07-14"), "created": ts("06-30")}],
     "versions": [
         {"id": "v-1", "resumeId": "r-ops", "data": OPS_V1, "at": ts("10-15", 9), "note": "Before adding the certification"},
         {"id": "v-2", "resumeId": "r-ops", "data": OPS_V2, "at": ts("11-01", 16), "note": "Before adding the coaching bullet"}]

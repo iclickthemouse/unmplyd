@@ -174,11 +174,30 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .banner.warn{border-left-color:var(--warn)}
 .banner p{margin:0;flex:1 1 300px;min-width:0}
 #impConfirm:empty{display:none}
+#askTip:not([hidden]){display:block}
 .edhost{grid-column:1/-1;min-width:0}
 .rcard{border-top-width:3px}
 .edbar .btn:disabled{opacity:.45;cursor:default}
-.edbar .accent{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted)}
-.edbar .accent select{font:inherit;font-size:12px;letter-spacing:0;text-transform:none;font-weight:400;padding:5px 6px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:2px;min-height:34px}
+/* design panel */
+.dhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
+.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.preset{font:inherit;text-align:left;display:grid;gap:4px;padding:12px 14px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer;border-radius:2px;min-height:44px}
+.preset b{font-size:13px}
+.preset span{font-size:12px;color:var(--muted);line-height:1.45}
+.preset:hover{border-color:var(--accent)}
+.preset[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.preset.corpo b{font-family:"Times New Roman",Times,serif;font-size:15px;letter-spacing:0}
+form.ed label.check{display:flex;flex-direction:row;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-weight:400;font-size:13px;color:var(--mid)}
+form.ed label.check input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
+form.ed .field{display:grid;gap:4px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;min-width:0}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.swatch{width:28px;height:28px;border-radius:2px;border:1px solid var(--rule);cursor:pointer;padding:0}
+.swatch[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+form.ed input[type=color]{width:44px;height:30px;padding:2px;cursor:pointer}
+#designForm{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));align-items:start}
+#designForm label,#designForm .field{align-content:start}
+#designForm label.btn{display:inline-flex;text-transform:none;letter-spacing:.05em;font-size:12px;font-weight:700;color:var(--ink)}
+#designForm label.btn:hover{color:var(--accent)}
 .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .panel #askReply{min-height:90px}
 /* layout controls, shown only while Edit layout is on */
@@ -189,7 +208,33 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .paper .ctls{display:inline-flex;gap:4px}
 .paper:not(.layout) .ctl,.paper:not(.layout) .ctlrow,.paper:not(.layout) .ctls{display:none}
 .paper.layout .job,.paper.layout .grp,.paper.layout .pline{outline:1px dashed var(--p-rule);outline-offset:4px}
-.paper .co{text-transform:uppercase}
+/* design options: every résumé's look is standardized into these */
+.paper .sh h2{text-transform:uppercase}
+.paper.nc-upper .pname,.paper.nc-upper .ptitle{text-transform:uppercase}
+.paper.cocaps .co{text-transform:uppercase}
+.paper:not(.cocaps) .co{letter-spacing:.02em}
+.paper.f-sans{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px}
+.paper.f-serif{font-family:"Times New Roman",Times,serif;font-size:14px;line-height:1.45}
+.paper.f-serif .pname{font-size:24px}
+.paper.f-serif .ptitle{font-size:13.5px;font-weight:400}
+.paper.f-serif .role{font-style:italic}
+.paper.f-serif .dates,.paper.f-serif .pcontact,.paper.f-serif .note{font-size:12.5px}
+.paper.ns-normal .pname{letter-spacing:.02em}
+.paper.ns-normal .ptitle{letter-spacing:.04em}
+.paper.n-left .phead{justify-items:start;text-align:left}
+.paper.nobar .uline{display:none}
+.paper.nobar .phead{gap:4px}
+.paper.nosumbar .psum{border-left:0;padding-left:0}
+.paper.h-rule .sh,.paper.h-plain .sh{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;margin:20px 0 8px}
+.paper.h-rule .sh .num,.paper.h-plain .sh .num,.paper.h-plain .sh .line{display:none}
+.paper.h-rule .sh .line{grid-column:1/-1;grid-row:2;flex:none;background:var(--p-blue);min-width:0}
+.paper.h-rule .sh h2{color:var(--p-blue);letter-spacing:.08em}
+.paper.h-plain .sh h2{letter-spacing:.08em}
+.paper.b-round li::before{border-radius:50%;width:4px;height:4px;top:.68em}
+.paper.b-dash li::before{content:"–";background:none;width:auto;height:auto;top:0;left:1px;color:var(--p-blue)}
+.paper.s-inline .grp{display:flex;flex-wrap:wrap;gap:0 6px;margin:0 0 4px}
+.paper.s-inline .glabel::after{content:":"}
+.paper .plogo{display:block;max-height:52px;max-width:220px;object-fit:contain;margin:0 0 10px}
 .paper.mini{padding:24px 26px;font-size:11.5px;box-shadow:none;max-height:520px;overflow:auto}
 @media print{.mast,#resumes,.sec-head,.edbar,.panel,#pvBar,#edHint{display:none!important}.paper{border:0;box-shadow:none;padding:0}}
 </style>
@@ -236,7 +281,7 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
         <label>Name this résumé<input id="nfTitle" placeholder="e.g. Operations, or Operations · Acme" required autocomplete="off"></label>
         <label>What it's for<input id="nfTarget" placeholder="e.g. Operations manager roles" autocomplete="off"></label>
         <label class="wide">Start from<select id="nfFrom"></select></label>
-        <label class="wide" id="nfPasteWrap" hidden>Your current résumé as plain text<textarea id="nfPaste" placeholder="Paste your résumé here (copy it out of a PDF or Word file). Next, you'll copy a prompt into any AI assistant, and it turns this into an editable, designed résumé."></textarea></label>
+        <label class="wide" id="nfPasteWrap" hidden>Your current résumé as plain text<textarea id="nfPaste" placeholder="Paste your résumé here (copy it out of a PDF or Word file). Next, you'll copy a prompt into any AI assistant, and it turns this into an editable résumé. Attach your original file in that AI chat too, and the design is matched to your original."></textarea></label>
         <div class="acts"><button class="btn primary" type="submit">Create and open</button><button class="btn" type="button" id="nfCancel">Cancel</button></div>
       </form>
       <div><button class="btn" type="button" id="newBtn">+ New résumé</button></div>
@@ -251,11 +296,34 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
         <button class="btn" type="button" id="askBtn">Edit with AI</button>
         <button class="btn" type="button" id="layoutBtn" aria-pressed="false">Edit layout</button>
         <button class="btn" type="button" id="histBtn">History</button>
-        <label class="accent"><span>Accent</span><select id="accentSel" aria-label="Accent color"></select></label>
+        <button class="btn" type="button" id="designBtn">Design</button>
         <button class="btn primary" type="button" id="pdfBtn">Download PDF</button>
+      </div>
+      <div class="panel" id="designPanel" hidden>
+        <div class="dhead"><h3>Design</h3><span class="muted" style="font-size:12px" id="dCurrent"></span></div>
+        <div class="presets" role="group" aria-label="Design presets">
+          <button class="preset" type="button" data-preset="original"><b>Match my original</b><span>Any AI assistant reads your original résumé file and maps its fonts, colors and layout onto the options below.</span></button>
+          <button class="preset" type="button" data-preset="unmplyd"><b>unmplyd</b><span>JetBrains Mono, numbered sections, a blue accent.</span></button>
+          <button class="preset corpo" type="button" data-preset="corpo"><b>Corpo slop</b><span>Times New Roman, all black, plain. Nothing to see here.</span></button>
+        </div>
+        <form class="ed" id="designForm" onsubmit="return false">
+          <label>Font<select data-d="font"><option value="mono">Mono (JetBrains Mono)</option><option value="sans">Sans (Helvetica, Arial)</option><option value="serif">Serif (Times New Roman)</option></select></label>
+          <div class="field">Accent<span class="row" style="gap:6px"><span class="swatches" id="swatches"></span><input type="color" data-d="accent" aria-label="Custom accent color" title="Any color"></span></div>
+          <label>Name<select data-d="nameCase"><option value="upper">ALL CAPS</option><option value="asis">As typed</option></select></label>
+          <label>Name position<select data-d="nameAlign"><option value="center">Centered</option><option value="left">Left</option></select></label>
+          <label>Name spacing<select data-d="nameSpacing"><option value="wide">Wide</option><option value="normal">Normal</option></select></label>
+          <label>Section headings<select data-d="headings"><option value="numbered">Numbered, with a line</option><option value="rule">Underlined</option><option value="plain">Plain</option></select></label>
+          <label>Bullets<select data-d="bullets"><option value="square">Squares</option><option value="round">Dots</option><option value="dash">Dashes</option></select></label>
+          <label>Skills<select data-d="skills"><option value="stacked">Label above the items</option><option value="inline">Label: items</option></select></label>
+          <label class="check"><input type="checkbox" data-d="nameBar"> Bar under the name</label>
+          <label class="check"><input type="checkbox" data-d="summaryBar"> Bar beside the summary</label>
+          <label class="check"><input type="checkbox" data-d="companyCaps"> Company names in capitals</label>
+          <div class="field wide">Logo (optional)<span class="row"><label class="btn" for="logoFile">Upload a logo</label><input type="file" id="logoFile" accept="image/png,image/jpeg" hidden><button class="btn ghost" type="button" id="logoRemove">Remove logo</button><span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400" id="logoNote"></span></span></div>
+        </form>
       </div>
       <div class="panel" id="askPanel" hidden>
         <p class="muted" style="font-size:12.5px">Works with any AI assistant. Copy the prompt, paste it into the assistant you use, then paste its whole reply back here. Nothing changes until you review and apply it.</p>
+        <p class="chip accent" id="askTip" hidden style=white-space:normal;text-transform:none;letter-spacing:0;font-weight:400;font-size:12.5px"></p>
         <label for="askText" class="eyebrow" id="askLabel">What should change?</label>
         <textarea id="askText" placeholder="e.g. Tighten the bullets in my current role and lead with the biggest result"></textarea>
         <div class="chips" id="askChips" role="group" aria-label="Quick requests">
@@ -297,14 +365,18 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 </main>
 <div class="toast" id="toast" hidden role="status"></div>
 
-<script type="application/json" id="unmplyd-example">{"app":"unmplyd","version":2,"openId":"r-ops","example":true,"lastExport":null,"resumes":[{"id":"r-ops","title":"Operations","target":"Operations manager roles","status":"current","notes":"My main résumé.","accent":"#003FCC","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-11-02T10:00:00.000Z","created":"2026-09-20T10:00:00.000Z"},{"id":"r-pm","title":"Project management","target":"Program & project manager roles","status":"current","notes":"Leads with rollouts and delivery.","accent":"#1D6B45","data":{"name":"ALEX RIVERA","title":"PROGRAM & PROJECT MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Program and project manager with nine years of operations experience. I plan and run multi-site rollouts, keep budgets and timelines honest, and get busy teams to adopt new ways of working.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Led the rollout of a new scheduling system across 12 clinics in five months, on budget.","Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Program management","text":"Rollout planning / Budgets / Risk tracking / Stakeholder updates / Change management"},{"label":"Tools","text":"Asana / Excel / Tableau / SQL basics"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-10-25T10:00:00.000Z","created":"2026-10-25T10:00:00.000Z"},{"id":"r-supply","title":"Operations · Supply chain","target":"Warehouse and supply chain roles","status":"draft","notes":"Copied from Operations. Still tailoring.","accent":"#003FCC","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER · SUPPLY CHAIN","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager who raised on-time shipments from 91% to 98% across three warehouse shifts, now running 12 clinics. Strongest where many people, shifts and handoffs have to work as one.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-11-04T10:00:00.000Z","created":"2026-11-03T10:00:00.000Z"},{"id":"r-old","title":"Operations (summer 2026)","target":"Operations manager roles","status":"older","notes":"Replaced by Operations in October.","accent":"#141414","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Experienced operations professional with a background in healthcare, logistics and retail.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"}]}]},"savedAt":"2026-07-14T10:00:00.000Z","created":"2026-06-30T10:00:00.000Z"}],"versions":[{"id":"v-1","resumeId":"r-ops","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"}]}]},"at":"2026-10-15T09:00:00.000Z","note":"Before adding the certification"},{"id":"v-2","resumeId":"r-ops","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"at":"2026-11-01T16:00:00.000Z","note":"Before adding the coaching bullet"}]}</script>
+<script type="application/json" id="unmplyd-example">{"app":"unmplyd","version":2,"openId":"r-ops","example":true,"lastExport":null,"resumes":[{"id":"r-ops","title":"Operations","target":"Operations manager roles","status":"current","notes":"My main résumé.","design":{"preset":"unmplyd","font":"mono","accent":"#003FCC","nameCase":"upper","nameAlign":"center","nameSpacing":"wide","nameBar":true,"headings":"numbered","bullets":"square","summaryBar":true,"companyCaps":true,"skills":"stacked"},"data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-11-02T10:00:00.000Z","created":"2026-09-20T10:00:00.000Z"},{"id":"r-pm","title":"Project management","target":"Program & project manager roles","status":"current","notes":"Leads with rollouts and delivery. Plain Times New Roman for conservative companies.","design":{"preset":"corpo","font":"serif","accent":"#000000","nameCase":"asis","nameAlign":"center","nameSpacing":"normal","nameBar":false,"headings":"rule","bullets":"round","summaryBar":false,"companyCaps":false,"skills":"inline"},"data":{"name":"Alex Rivera","title":"Program & Project Manager","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Program and project manager with nine years of operations experience. I plan and run multi-site rollouts, keep budgets and timelines honest, and get busy teams to adopt new ways of working.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Led the rollout of a new scheduling system across 12 clinics in five months, on budget.","Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Program management","text":"Rollout planning / Budgets / Risk tracking / Stakeholder updates / Change management"},{"label":"Tools","text":"Asana / Excel / Tableau / SQL basics"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-10-25T10:00:00.000Z","created":"2026-10-25T10:00:00.000Z"},{"id":"r-supply","title":"Operations · Supply chain","target":"Warehouse and supply chain roles","status":"draft","notes":"Copied from Operations. Still tailoring.","design":{"preset":"custom","font":"mono","accent":"#1D6B45","nameCase":"upper","nameAlign":"center","nameSpacing":"wide","nameBar":true,"headings":"numbered","bullets":"square","summaryBar":true,"companyCaps":true,"skills":"stacked"},"data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER · SUPPLY CHAIN","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager who raised on-time shipments from 91% to 98% across three warehouse shifts, now running 12 clinics. Strongest where many people, shifts and handoffs have to work as one.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"savedAt":"2026-11-04T10:00:00.000Z","created":"2026-11-03T10:00:00.000Z"},{"id":"r-old","title":"Operations (summer 2026)","target":"Operations manager roles","status":"older","notes":"Replaced by Operations in October.","design":{"preset":"custom","font":"mono","accent":"#141414","nameCase":"upper","nameAlign":"center","nameSpacing":"wide","nameBar":true,"headings":"numbered","bullets":"square","summaryBar":true,"companyCaps":true,"skills":"stacked"},"data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Experienced operations professional with a background in healthcare, logistics and retail.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"}]}]},"savedAt":"2026-07-14T10:00:00.000Z","created":"2026-06-30T10:00:00.000Z"}],"versions":[{"id":"v-1","resumeId":"r-ops","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget.","Hired and coached six clinic leads; four have since been promoted."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"}]}]},"at":"2026-10-15T09:00:00.000Z","note":"Before adding the certification"},{"id":"v-2","resumeId":"r-ops","data":{"name":"ALEX RIVERA","title":"OPERATIONS MANAGER","contact":"Chicago, IL · alex@example.com · (555) 010-0199 · alexrivera.example","summary":"Operations manager with nine years running teams, budgets and day-to-day delivery in healthcare, logistics and retail. Known for fixing slow, error-prone processes and making the fix stick.","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"Meridian Clinics","note":"12 locations","dates":"Mar 2022 – Present","roles":[{"title":"Operations Manager","dates":"","bullets":["Run day-to-day operations for 12 outpatient clinics with 140 staff and an $18M annual budget.","Cut average patient wait time from 34 to 19 minutes by redesigning check-in and scheduling.","Rolled out a new scheduling system across all 12 sites in five months, on budget."]}],"bullets":[]},{"company":"Northstar Supply","note":"","dates":"Jun 2018 – Feb 2022","roles":[{"title":"Operations Supervisor","dates":"Jan 2020 – Feb 2022","bullets":["Supervised three shifts and 60 warehouse staff; raised on-time shipments from 91% to 98%.","Reduced picking errors by 40% with clearer slotting and a daily five-minute huddle."]},{"title":"Operations Coordinator","dates":"Jun 2018 – Dec 2019","bullets":["Built the inventory reports leadership used for weekly planning."]}],"bullets":[]},{"company":"Corner Market Co.","note":"","dates":"Aug 2015 – May 2018","roles":[{"title":"Assistant Store Manager","dates":"","bullets":["Managed scheduling, ordering and training for a 35-person store with $6M in annual sales."]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"Operations","text":"Process improvement / Budgeting / Scheduling / Vendor management / KPIs"},{"label":"Tools","text":"Excel / Tableau / SQL basics / Asana"}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"State University","text":"B.S., Business Administration"},{"bold":"Lean Six Sigma Green Belt","text":"2021"}]}]},"at":"2026-11-01T16:00:00.000Z","note":"Before adding the coaching bullet"}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
   "use strict";
   /* unmplyd: bespoke résumés you can edit and keep track of. One file, no build step.
      Everything is saved in this browser's localStorage under KEY.
-       resumes[]  {id, title, target, status: "current"|"draft"|"older", notes, accent, data: Résumé, savedAt, created}
+       resumes[]  {id, title, target, status: "current"|"draft"|"older", notes, design: Design, data: Résumé, savedAt, created}
+     Design = {preset, font: "mono"|"sans"|"serif", accent: "#RRGGBB", nameCase: "upper"|"asis", nameAlign: "center"|"left",
+       nameSpacing: "wide"|"normal", nameBar, headings: "numbered"|"rule"|"plain", bullets: "square"|"round"|"dash",
+       summaryBar, companyCaps, skills: "stacked"|"inline", logo?: data URL, fontsSeen?}. Any original résumé's look is
+       standardized into these options, so the screen and the PDF can always render it.
        versions[] {id, resumeId, data: Résumé, at, note}
      Résumé = {name, title, contact, summary, sections: [
        {type:"experience", heading, entries:[{company, note, dates, roles:[{title, dates, bullets[]}], bullets[]}]},
@@ -314,7 +386,26 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
   const FONT_R = "fonts/JetBrainsMono-Regular.ttf", FONT_B = "fonts/JetBrainsMono-Bold.ttf";
   const STATUSES = ["current", "draft", "older"];
   const TONE = { current: "good", draft: "warn", older: "" };
-  const ACCENTS = [["#003FCC", "Blue"], ["#141414", "Ink"], ["#1D6B45", "Forest"], ["#A3242A", "Crimson"], ["#5B3CC4", "Violet"], ["#A85700", "Amber"]];
+  const ACCENTS = [["#003FCC", "Blue"], ["#141414", "Ink"], ["#000000", "Black"], ["#1D6B45", "Forest"], ["#A3242A", "Crimson"], ["#5B3CC4", "Violet"], ["#A85700", "Amber"]];
+  const DESIGN_OPTIONS = { font: ["mono", "sans", "serif"], nameCase: ["upper", "asis"], nameAlign: ["center", "left"], nameSpacing: ["wide", "normal"], headings: ["numbered", "rule", "plain"], bullets: ["square", "round", "dash"], skills: ["stacked", "inline"] };
+  const PRESETS = {
+    unmplyd: { font: "mono", accent: "#003FCC", nameCase: "upper", nameAlign: "center", nameSpacing: "wide", nameBar: true, headings: "numbered", bullets: "square", summaryBar: true, companyCaps: true, skills: "stacked" },
+    corpo: { font: "serif", accent: "#000000", nameCase: "asis", nameAlign: "center", nameSpacing: "normal", nameBar: false, headings: "rule", bullets: "round", summaryBar: false, companyCaps: false, skills: "inline" }
+  };
+  const PRESET_NAMES = { unmplyd: "unmplyd", corpo: "Corpo slop", original: "Matched to your original", custom: "Custom" };
+  function sanitizeDesign(d, legacyAccent){
+    const out = Object.assign({ preset: "unmplyd" }, PRESETS.unmplyd);
+    if(legacyAccent && /^#[0-9a-f]{6}$/i.test(legacyAccent)){ out.accent = legacyAccent.toUpperCase(); }
+    if(d && typeof d === "object"){
+      for(const [k, opts] of Object.entries(DESIGN_OPTIONS)) if(opts.includes(d[k])) out[k] = d[k];
+      for(const k of ["nameBar", "summaryBar", "companyCaps"]) if(typeof d[k] === "boolean") out[k] = d[k];
+      if(/^#[0-9a-f]{6}$/i.test(d.accent || "")) out.accent = d.accent.toUpperCase();
+      if(typeof d.logo === "string" && /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(d.logo) && d.logo.length < 600000) out.logo = d.logo;
+      if(PRESET_NAMES[d.preset]) out.preset = d.preset;
+      if(typeof d.fontsSeen === "string" && d.fontsSeen.trim()) out.fontsSeen = d.fontsSeen.trim().slice(0, 120);
+    }
+    return out;
+  }
   const $ = (id) => document.getElementById(id);
   function el(tag, attrs, ...kids){
     const n = document.createElement(tag);
@@ -377,7 +468,7 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     out.openId = d.openId || null; out.example = !!d.example; out.lastExport = d.lastExport || null;
     out.resumes = (Array.isArray(d.resumes) ? d.resumes : []).filter(r => r && r.id).map(r => ({
       id: String(r.id), title: String(r.title || "Untitled"), target: String(r.target || ""), status: STATUSES.includes(r.status) ? r.status : "current",
-      notes: String(r.notes || ""), accent: /^#[0-9a-f]{6}$/i.test(r.accent || "") ? r.accent : ACCENTS[0][0],
+      notes: String(r.notes || ""), design: sanitizeDesign(r.design, r.accent),
       data: sanitize(r.data), savedAt: r.savedAt || nowIso(), created: r.created || r.savedAt || nowIso() }));
     out.versions = (Array.isArray(d.versions) ? d.versions : []).filter(v => v && v.id && v.resumeId && v.data).map(v => ({ id: String(v.id), resumeId: String(v.resumeId), data: sanitize(v.data), at: v.at || nowIso(), note: String(v.note || "") }));
     return out;
@@ -432,9 +523,10 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     } }, "Details");
   }
   function card(r){
-    return el("article", { class: "rcard", style: "border-top-color:" + r.accent },
+    return el("article", { class: "rcard", style: "border-top-color:" + r.design.accent },
       el("div", { class: "row", style: "justify-content:space-between" }, el("span", { class: "track" }, r.target || "Résumé"), el("span", { class: "row" }, chip(r.status, TONE[r.status]), el("span", { class: "muted num", style: "font-size:12px" }, "Updated " + fmtDay(r.savedAt)))),
       el("h3", null, r.title),
+      el("p", { class: "muted", style: "font-size:12px" }, "Design: " + (PRESET_NAMES[r.design.preset] || "Custom")),
       r.data.title ? el("p", { class: "muted" }, r.data.title) : null,
       el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: () => openInEditor(r.id, true) }, "Edit in the editor"), el("button", { class: "btn", type: "button", onclick: () => downloadPdf(r) }, "Download PDF")),
       r.notes ? el("p", null, r.notes) : null,
@@ -459,7 +551,7 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     return f;
   }
   function duplicate(r){
-    const n = { id: uid("r"), title: r.title + " (copy)", target: r.target, status: "draft", notes: "Copied from " + r.title + " on " + fmtDay(nowIso()) + ".", accent: r.accent, data: clone(r.data), savedAt: nowIso(), created: nowIso() };
+    const n = { id: uid("r"), title: r.title + " (copy)", target: r.target, status: "draft", notes: "Copied from " + r.title + " on " + fmtDay(nowIso()) + ".", design: clone(r.design), data: clone(r.data), savedAt: nowIso(), created: nowIso() };
     S.resumes.push(n); flush(); return n;
   }
 
@@ -490,7 +582,7 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     e.preventDefault();
     const title = $("nfTitle").value.trim(); if(!title) return;
     const from = $("nfFrom").value, src = from.startsWith("copy:") ? findR(from.slice(5)) : null;
-    const r = { id: uid("r"), title, target: $("nfTarget").value.trim(), status: S.resumes.some(x => x.status === "current") ? "draft" : "current", notes: src ? "Started from " + src.title + "." : "", accent: src ? src.accent : ACCENTS[0][0], data: src ? clone(src.data) : blank(), savedAt: nowIso(), created: nowIso() };
+    const r = { id: uid("r"), title, target: $("nfTarget").value.trim(), status: S.resumes.some(x => x.status === "current") ? "draft" : "current", notes: src ? "Started from " + src.title + "." : "", design: src ? clone(src.design) : sanitizeDesign(null), data: src ? clone(src.data) : blank(), savedAt: nowIso(), created: nowIso() };
     S.resumes.push(r); flush();
     const pasted = $("nfPaste").value.trim();
     $("nfTitle").value = ""; $("nfTarget").value = ""; $("nfPaste").value = ""; $("newForm").hidden = true;
@@ -507,7 +599,7 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     let d; try { const raw = JSON.parse(await f.text()); if(!raw || !Array.isArray(raw.resumes)) throw 0; d = normalize(raw); d.example = false; } catch(err){ toast("That file isn't an unmplyd backup"); return; }
     const host = $("impConfirm");
     host.replaceChildren(el("div", { class: "banner warn" }, el("p", null, "“" + f.name + "” has " + d.resumes.length + " résumé" + (d.resumes.length === 1 ? "" : "s") + ". Replace everything in this browser with it? Export a backup first if you want to keep what's here."),
-      el("button", { class: "btn danger", type: "button", onclick: () => { S = d; E.id = null; host.replaceChildren(); flush(); render(); toast("Imported"); } }, "Replace everything"),
+      el("button", { class: "btn danger", type: "button", onclick: () => { S = d; E.id = null; pickDefault(); host.replaceChildren(); flush(); render(); toast("Imported"); } }, "Replace everything"),
       el("button", { class: "btn", type: "button", onclick: () => host.replaceChildren() }, "Cancel")));
     host.scrollIntoView({ block: "nearest" });
   });
@@ -526,12 +618,19 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     }
     return n;
   }
-  function build(d, ed, layout){
+  const DESIGN_CLASS = /^(f|n|ns|nc|h|b|s)-|^(nobar|nosumbar|cocaps)$/;
+  function applyDesign(node, D){
+    node.classList.remove(...[...node.classList].filter(c => DESIGN_CLASS.test(c)));
+    node.classList.add("f-" + D.font, "n-" + D.nameAlign, "ns-" + D.nameSpacing, "nc-" + D.nameCase, "h-" + D.headings, "b-" + D.bullets, "s-" + D.skills);
+    if(!D.nameBar) node.classList.add("nobar"); if(!D.summaryBar) node.classList.add("nosumbar"); if(D.companyCaps) node.classList.add("cocaps");
+    node.style.setProperty("--p-blue", D.accent);
+  }
+  function build(d, ed, layout, D){
     const X = (tag, path, text, cls, o) => editable(tag, path, text, cls, o, ed);
     const C = (label, op, path, tpl, title) => layout ? el("button", { class: "ctl", type: "button", "data-op": op, "data-path": JSON.stringify(path), "data-tpl": tpl || null, title: title || null, "aria-label": title || label }, label) : null;
     const bullets = (arr, path) => el("ul", null, (arr || []).map((b, i) => el("li", null, X("span", path.concat(i), b, "btxt", { bullet: true, ph: "New bullet" }), C("✕", "del", path.concat(i), null, "Remove this bullet"))));
     const out = [];
-    out.push(el("header", { class: "phead" }, X("h1", ["name"], d.name, "pname", { ph: "YOUR NAME" }), el("div", { class: "uline", "aria-hidden": "true" }), X("p", ["title"], d.title, "ptitle", { ph: "HEADLINE" }), X("p", ["contact"], d.contact, "pcontact", { ph: "City · email · phone · link" })));
+    out.push(el("header", { class: "phead" }, D && D.logo ? el("img", { class: "plogo", src: D.logo, alt: "Logo" }) : null, X("h1", ["name"], d.name, "pname", { ph: "YOUR NAME" }), el("div", { class: "uline", "aria-hidden": "true" }), X("p", ["title"], d.title, "ptitle", { ph: "HEADLINE" }), X("p", ["contact"], d.contact, "pcontact", { ph: "City · email · phone · link" })));
     if(typeof d.summary === "string" && d.summary.trim()) out.push(X("p", ["summary"], d.summary, "psum", { ph: "Summary" }));
     if(layout) out.push(el("div", { class: "ctlrow" }, C(d.summary && d.summary.trim() ? "Remove summary" : "+ Summary", "summary", ["summary"])));
     (d.sections || []).forEach((s, si) => {
@@ -577,15 +676,14 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     renderTabs();
     const p = $("paper"), r = cur();
     const none = !r;
-    ["askBtn", "layoutBtn", "histBtn", "pdfBtn"].forEach(id => { $(id).disabled = none; });
-    $("accentSel").disabled = none;
-    if(none){ p.replaceChildren(el("div", { class: "empty" }, "Open a résumé above, or create one with + New résumé.")); $("pvBar").hidden = true; p.style.removeProperty("--p-blue"); return; }
+    ["askBtn", "layoutBtn", "histBtn", "pdfBtn", "designBtn"].forEach(id => { $(id).disabled = none; });
+    if(none){ p.replaceChildren(el("div", { class: "empty" }, "Open a résumé above, or create one with + New résumé.")); $("pvBar").hidden = true; $("designPanel").hidden = true; applyDesign(p, sanitizeDesign(null)); return; }
     const d = E.preview ? E.preview.data : r.data, ed = !E.preview, layout = ed && E.layout;
-    p.style.setProperty("--p-blue", r.accent);
+    applyDesign(p, r.design);
     p.classList.toggle("readonly", !ed); p.classList.toggle("layout", layout);
-    p.replaceChildren(...build(d, ed, layout));
+    p.replaceChildren(...build(d, ed, layout, r.design));
     $("layoutBtn").setAttribute("aria-pressed", E.layout ? "true" : "false");
-    $("accentSel").value = r.accent;
+    if(!$("designPanel").hidden) syncDesign();
     $("pvBar").hidden = !E.preview;
     if(E.preview) $("pvText").textContent = "Previewing the version from " + fmt(E.preview.at) + (E.preview.note ? " · " + E.preview.note : "");
   }
@@ -597,13 +695,44 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
   function openInEditor(id, scroll){
     if(!findR(id)) return;
     if(pending) flush();
-    E.id = id; S.openId = id; E.preview = null; E.layout = false; closeAsk(); $("histPanel").hidden = true;
+    E.id = id; S.openId = id; E.preview = null; E.layout = false; closeAsk(); $("histPanel").hidden = true; $("designPanel").hidden = true;
     render(); status("");
     if(scroll) $("editor").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
   }
   $("edTabs").addEventListener("click", (e) => { const b = e.target.closest("button[data-id]"); if(b && b.dataset.id !== E.id) openInEditor(b.dataset.id); });
-  $("accentSel").replaceChildren(...ACCENTS.map(([v, n]) => el("option", { value: v }, n)));
-  $("accentSel").addEventListener("change", () => { const r = cur(); if(!r) return; r.accent = $("accentSel").value; r.savedAt = nowIso(); render(); persist(); });
+
+  /* design panel */
+  function syncDesign(){
+    const r = cur(); if(!r) return; const D = r.design;
+    document.querySelectorAll("#designForm [data-d]").forEach(n => { const k = n.dataset.d; if(n.type === "checkbox") n.checked = !!D[k]; else n.value = k === "accent" ? D.accent.toLowerCase() : D[k]; });
+    $("swatches").replaceChildren(...ACCENTS.map(([v, nm]) => el("button", { type: "button", class: "swatch", style: "background:" + v, title: nm, "aria-label": nm + " accent", "aria-pressed": D.accent === v.toUpperCase() ? "true" : "false", onclick: () => setDesign({ accent: v }) })));
+    $("dCurrent").textContent = "Current: " + (PRESET_NAMES[D.preset] || "Custom") + (D.fontsSeen ? " · your original uses " + D.fontsSeen : "");
+    document.querySelectorAll("#designPanel .preset").forEach(b => b.setAttribute("aria-pressed", b.dataset.preset === D.preset ? "true" : "false"));
+    $("logoRemove").hidden = !D.logo; $("logoNote").textContent = D.logo ? "Shown above your name, on screen and in the PDF." : "PNG or JPG. Shown above your name.";
+  }
+  function setDesign(patch, preset){
+    const r = cur(); if(!r) return;
+    const keep = { fontsSeen: r.design.fontsSeen };
+    r.design = sanitizeDesign(Object.assign({}, r.design, patch, { preset: preset || "custom" }, preset === "original" ? {} : (preset ? { fontsSeen: undefined } : keep)));
+    r.savedAt = nowIso(); render(); syncDesign(); persist();
+  }
+  $("designBtn").addEventListener("click", () => { const p = $("designPanel"); if(!p.hidden){ p.hidden = true; return; } closeAsk(); $("histPanel").hidden = true; p.hidden = false; syncDesign(); });
+  document.querySelectorAll("#designForm [data-d]").forEach(n => n.addEventListener(n.type === "color" ? "input" : "change", () => setDesign({ [n.dataset.d]: n.type === "checkbox" ? n.checked : n.value })));
+  document.querySelectorAll("#designPanel .preset").forEach(b => b.addEventListener("click", () => {
+    const r = cur(); if(!r) return; const which = b.dataset.preset;
+    if(which === "original"){ openAsk("design"); return; }
+    setDesign(Object.assign({}, PRESETS[which], { logo: r.design.logo || null }), which);
+    toast(which === "corpo" ? "Corpo slop applied: Times New Roman, all black, plain" : "unmplyd design applied");
+  }));
+  function shrinkImage(file, maxW, maxH){
+    return new Promise((res, rej) => { const img = new Image(); img.onload = () => { const k = Math.min(1, maxW / img.width, maxH / img.height); const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k)); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(img.src); res(c.toDataURL(file.type === "image/jpeg" ? "image/jpeg" : "image/png", 0.9)); }; img.onerror = () => rej(new Error("image")); img.src = URL.createObjectURL(file); });
+  }
+  $("logoFile").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ""; const r = cur(); if(!f || !r) return;
+    if(!/^image\/(png|jpeg)$/.test(f.type)){ toast("Use a PNG or JPG for the logo"); return; }
+    try { setDesign({ logo: await shrinkImage(f, 600, 200) }, r.design.preset); toast("Logo added"); } catch(err){ toast("Couldn't read that image"); }
+  });
+  $("logoRemove").addEventListener("click", () => { const r = cur(); if(r) setDesign({ logo: null }, r.design.preset); });
   $("layoutBtn").addEventListener("click", () => { E.layout = !E.layout; render(); });
 
   /* editing */
@@ -671,23 +800,40 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 
   /* ---------- AI edits, with any assistant ---------- */
   const CHIPS = { tighten: "Tighten every bullet so each fits on one or two lines, without losing any facts or numbers.", verbs: "Use stronger, more specific verbs at the start of each bullet.", results: "Rewrite the bullets so each one leads with the result, keeping every fact.", shorter: "Shorten the summary and the least important bullets so the résumé takes up less space.", tailor: "Tailor the summary and bullets to the job posting below. Reorder and reword for fit; don't add anything that isn't already true." };
+  const ASK = {
+    edit: { label: "What should change?", ph: "e.g. Tighten the bullets in my current role and lead with the biggest result", tip: "" },
+    import: { label: "Paste your current résumé as plain text", ph: "Paste your whole résumé here (copy it out of a PDF or Word file)", tip: "To match your original design too, attach your original résumé file (PDF, Word or a screenshot) in the same AI chat when you paste the prompt." },
+    design: { label: "Anything to know about your original design? (optional)", ph: "e.g. The name is in dark green and the headings are underlined", tip: "Attach your original résumé file (PDF, Word or a screenshot) in your AI chat, then paste this prompt with it. The assistant maps its look onto unmplyd's design options." }
+  };
   function openAsk(mode){
-    E.mode = mode === "import" ? "import" : "edit"; E.proposal = null;
-    $("askLabel").textContent = E.mode === "import" ? "Paste your current résumé as plain text" : "What should change?";
-    $("askText").placeholder = E.mode === "import" ? "Paste your whole résumé here (copy it out of a PDF or Word file)" : "e.g. Tighten the bullets in my current role and lead with the biggest result";
-    $("postBox").hidden = E.mode === "import";
+    E.mode = ASK[mode] ? mode : "edit"; E.proposal = null;
+    const m = ASK[E.mode];
+    $("askLabel").textContent = m.label; $("askText").placeholder = m.ph;
+    $("askTip").textContent = m.tip; $("askTip").hidden = !m.tip;
+    $("postBox").hidden = E.mode !== "edit"; $("askChips").hidden = E.mode === "design";
+    if(E.mode !== "edit") $("askText").value = "";
     $("askReply").value = ""; $("askOut").textContent = ""; $("askResult").hidden = true; $("askDiff").replaceChildren();
-    $("histPanel").hidden = true; $("askPanel").hidden = false; $("askText").focus();
+    $("histPanel").hidden = true; $("designPanel").hidden = true; $("askPanel").hidden = false; $("askText").focus();
   }
   function closeAsk(){ E.proposal = null; $("askPanel").hidden = true; $("askDiff").replaceChildren(); $("askResult").hidden = true; $("askOut").textContent = ""; }
   $("askBtn").addEventListener("click", () => { if($("askPanel").hidden) openAsk("edit"); else closeAsk(); });
   $("askChips").addEventListener("click", (e) => {
     const b = e.target.closest("button[data-chip]"); if(!b) return;
-    if(b.dataset.chip === "import"){ openAsk("import"); $("askText").value = ""; return; }
-    if(E.mode === "import") openAsk("edit");
+    if(b.dataset.chip === "import"){ openAsk("import"); return; }
+    if(E.mode !== "edit") openAsk("edit");
     $("askText").value = CHIPS[b.dataset.chip]; if(b.dataset.chip === "tailor") $("postBox").open = true; $("askText").focus();
   });
   const SCHEMA = '{"name":"","title":"","contact":"","summary":"","sections":[{"type":"experience","heading":"EXPERIENCE","entries":[{"company":"","note":"","dates":"","roles":[{"title":"","dates":"","bullets":[""]}],"bullets":[]}]},{"type":"groups","heading":"CAPABILITIES","groups":[{"label":"","text":""}]},{"type":"lines","heading":"EDUCATION","lines":[{"bold":"","text":""}]}]}';
+  const DESIGN_SCHEMA = '{"font":"mono | sans | serif","accent":"#RRGGBB","nameCase":"upper | asis","nameAlign":"center | left","nameSpacing":"wide | normal","nameBar":true,"headings":"numbered | rule | plain","bullets":"square | round | dash","summaryBar":false,"companyCaps":false,"skills":"stacked | inline","fontsSeen":""}';
+  const DESIGN_RULES = [
+    "Standardize the original's look into these options only:",
+    "- font: \"serif\" for serif typefaces (Times, Garamond, Georgia, Cambria, Book Antiqua…), \"sans\" for sans-serif ones (Arial, Helvetica, Calibri, Inter, Lato, Open Sans, Roboto…), \"mono\" for monospaced ones.",
+    "- accent: the main color of the name, headings, lines or links, as a hex code. Use #000000 if everything is black.",
+    "- nameCase: \"upper\" if the name is in capitals, otherwise \"asis\". nameAlign: where the name sits. nameSpacing: \"wide\" if its letters are spaced out.",
+    "- nameBar: true if there's a short line or bar under the name. summaryBar: true if the summary has a colored bar beside it.",
+    "- headings: \"numbered\" if section headings are numbered, \"rule\" if they're underlined or followed by a line, otherwise \"plain\".",
+    "- bullets: the bullet shape. companyCaps: true if company names are in capitals. skills: \"inline\" if skills read \"Label: items\" on one line, \"stacked\" if the label sits above them.",
+    "- fontsSeen: the font names you can identify, for reference (\"\" if unsure)."];
   function editPrompt(resume, request, posting){
     return ["You are editing a résumé. The résumé is the JSON at the end of this message.",
       "Request: " + request,
@@ -701,25 +847,41 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
       "Résumé JSON:", JSON.stringify(resume)].filter(Boolean).join("\n");
   }
   function importPrompt(text){
-    return ["Convert the résumé text below into JSON with exactly this structure:", SCHEMA, "",
-      "Rules:",
+    return ["Convert the résumé below into JSON, and describe its design if you can see the original file.", "",
+      "Reply with ONLY this JSON, no commentary and no code fences:",
+      '{"resume": RESUME, "design": DESIGN or null}', "",
+      "RESUME has exactly this structure:", SCHEMA,
       "- \"experience\" sections hold jobs: one entry per employer, one role per job title, bullets under the role they belong to.",
       "- \"groups\" sections hold label/text pairs such as skills grouped by area. \"lines\" sections hold short items such as education, certifications or awards.",
-      "- Keep the résumé's own section headings, in capitals. Put the name and headline in capitals. Put location, email, phone and links in \"contact\", separated by \" · \".",
-      "- Copy the wording exactly. Don't rewrite, add or drop anything. Use \"\" for anything that isn't there.",
-      "- Reply with ONLY the JSON: no commentary and no code fences.", "",
+      "- Keep the name, headline and section headings as they're written. Put location, email, phone and links in \"contact\", separated by \" · \".",
+      "- Copy the wording exactly. Don't rewrite, add or drop anything. Use \"\" for anything that isn't there.", "",
+      "DESIGN: if the original résumé file (PDF, Word document or image) is attached to this conversation, fill it in from the file's formatting with exactly this structure:", DESIGN_SCHEMA,
+      ...DESIGN_RULES,
+      "If you can only see the pasted text, set \"design\" to null.", "",
       "Résumé text:", text].join("\n");
+  }
+  function designPrompt(note){
+    return ["Look at the original résumé file attached to this conversation (PDF, Word document or image) and describe its design.", "",
+      "Reply with ONLY this JSON, no commentary and no code fences:", DESIGN_SCHEMA, "",
+      ...DESIGN_RULES,
+      note ? "\nNotes from me: " + note : "",
+      "If no file is attached, reply with {\"error\": \"no file\"}."].filter(x => x !== "").join("\n");
   }
   $("askCopy").addEventListener("click", async () => {
     const r = cur(); if(!r) return;
     const text = $("askText").value.trim();
     let p;
     if(E.mode === "import"){ if(text.length < 40){ toast("Paste your résumé text first"); $("askText").focus(); return; } p = importPrompt(text); }
+    else if(E.mode === "design") p = designPrompt(text);
     else { if(!text){ toast("Say what you'd like changed first"); $("askText").focus(); return; } p = editPrompt(r.data, text, $("askPosting").value.trim()); }
-    if(await copyText(p)) $("askOut").textContent = "Prompt copied. Paste it into your AI assistant, then paste its whole reply in step 2.";
-    else { $("askReply").value = p; $("askOut").textContent = "Your browser blocked copying, so the prompt is in the reply box. Copy it from there, then replace it with the reply."; }
+    const extra = E.mode === "edit" ? "" : " Attach your original résumé file in that chat too.";
+    if(await copyText(p)) $("askOut").textContent = "Prompt copied. Paste it into your AI assistant," + (extra ? " attach your original résumé file," : "") + " then paste its whole reply in step 2.";
+    else { $("askReply").value = p; $("askOut").textContent = "Your browser blocked copying, so the prompt is in the reply box. Copy it from there, then replace it with the reply." + extra; }
   });
   function parseReply(t){ let s = String(t || "").trim(); const f = s.match(/```(?:json)?\s*([\s\S]*?)```/i); if(f) s = f[1].trim(); const a = s.indexOf("{"), b = s.lastIndexOf("}"); if(a < 0 || b < a) throw 0; return JSON.parse(s.slice(a, b + 1)); }
+  function looksLikeDesign(o){ return !!o && typeof o === "object" && !Array.isArray(o) && ["font", "accent", "headings", "bullets", "nameCase"].some(k => k in o); }
+  function originalDesign(o, r){ const nd = sanitizeDesign(Object.assign({}, o, { logo: r.design.logo || null })); nd.preset = "original"; return nd; }
+  function miniPaper(d, D){ const m = el("div", { class: "paper readonly mini" }); applyDesign(m, D); m.append(...build(d, false, false, D)); return m; }
   function flatten(o, p, out){ out = out || {}; p = p || [];
     if(typeof o === "string"){ if(p[p.length - 1] !== "type") out[JSON.stringify(p)] = { p, v: o }; return out; }
     if(o && typeof o === "object") for(const k of Object.keys(o)) flatten(o[k], p.concat(Array.isArray(o) ? +k : k), out);
@@ -741,13 +903,24 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
   }
   $("askReview").addEventListener("click", () => {
     const r = cur(); if(!r) return; $("askResult").hidden = true; E.proposal = null;
-    let res; try { res = parseReply($("askReply").value); } catch(e){ $("askOut").textContent = "That reply isn't valid résumé JSON. Check you pasted the whole reply, or ask the assistant to reply with the JSON only."; return; }
+    let obj; try { obj = parseReply($("askReply").value); } catch(e){ $("askOut").textContent = "That reply isn't valid JSON. Check you pasted the whole reply, or ask the assistant to reply with the JSON only."; return; }
+    if(E.mode === "design"){
+      const des = looksLikeDesign(obj) ? obj : looksLikeDesign(obj && obj.design) ? obj.design : null;
+      if(!des){ $("askOut").textContent = obj && obj.error ? "The assistant couldn't see a file. Attach your original résumé (PDF, Word or a screenshot) in the chat and try again." : "That reply doesn't describe a design. Paste the whole reply, or ask the assistant to answer with the design JSON only."; return; }
+      const nd = originalDesign(des, r);
+      E.proposal = { design: nd };
+      $("askOut").textContent = "Here's your résumé in your original's design" + (nd.fontsSeen ? " (it uses " + nd.fontsSeen + ")" : "") + ". Apply it, then fine-tune anything in Design.";
+      $("askDiff").replaceChildren(miniPaper(r.data, nd)); $("askResult").hidden = false; return;
+    }
+    let res = obj, des = null;
+    if(obj && typeof obj === "object" && obj.resume && typeof obj.resume === "object"){ res = obj.resume; des = looksLikeDesign(obj.design) ? obj.design : null; }
     if(!res || typeof res !== "object" || !Array.isArray(res.sections) || !res.sections.length){ $("askOut").textContent = "That doesn't look like a résumé (it has no sections). Ask the assistant to keep the same structure."; return; }
     res = sanitize(res);
     if(E.mode === "import"){
-      E.proposal = { data: res, note: "Before import" };
-      $("askOut").textContent = "Here's your imported résumé. Check it against the original, then apply. You can fix anything afterwards by clicking it.";
-      $("askDiff").replaceChildren(el("div", { class: "paper readonly mini", style: "--p-blue:" + r.accent }, ...build(res, false, false)));
+      const nd = des ? originalDesign(des, r) : null;
+      E.proposal = { data: res, design: nd, note: "Before import" };
+      $("askOut").textContent = "Here's your imported résumé" + (nd ? ", in your original's design" + (nd.fontsSeen ? " (" + nd.fontsSeen + ")" : "") : "") + ". Check it against the original, then apply. You can fix anything afterwards by clicking it." + (nd ? "" : " No design came back, so it keeps the current one. To match your original's look, use Design → Match my original.");
+      $("askDiff").replaceChildren(miniPaper(res, nd || r.design));
       $("askResult").hidden = false; return;
     }
     const fa = flatten(r.data), fb = flatten(res), rows = [];
@@ -762,7 +935,13 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
       rows.length > 80 ? el("p", { class: "muted" }, "…and " + (rows.length - 80) + " more.") : null);
     $("askResult").hidden = false;
   });
-  $("askApply").addEventListener("click", () => { const r = cur(), pr = E.proposal; if(!r || !pr) return; snapshot(r, pr.note); r.data = clone(pr.data); r.savedAt = nowIso(); flush(); render(); closeAsk(); toast("Applied. The previous version is saved in History"); });
+  $("askApply").addEventListener("click", () => {
+    const r = cur(), pr = E.proposal; if(!r || !pr) return;
+    if(pr.data){ snapshot(r, pr.note); r.data = clone(pr.data); }
+    if(pr.design) r.design = pr.design;
+    r.savedAt = nowIso(); flush(); render(); closeAsk();
+    toast(pr.data ? "Applied. The previous version is saved in History" : "Design matched to your original. Fine-tune it in Design");
+  });
   $("askDiscard").addEventListener("click", () => { E.proposal = null; $("askResult").hidden = true; $("askOut").textContent = "Discarded."; });
 
   /* ---------- PDF ---------- */
@@ -774,84 +953,124 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     return E.fonts;
   }
   const hexRgb = (h) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-  async function makePdf(d, accent){
-    const f = await fonts();
+  const CP1252 = "ŒœŠšŸŽžƒˆ˜–—‘’‚“”„†‡•…‰‹›€™";
+  function latinOk(s){ for(const ch of String(s)){ const c = ch.codePointAt(0); if(c <= 0xFF || CP1252.includes(ch)) continue; return false; } return true; }
+  // Type sizes (pt) for each standard font family. Mono keeps the original unmplyd measurements.
+  const SIZES = {
+    mono:  { name: 22, title: 10,   contact: 9,   sum: 9.6,  sumLh: 13.2, head: 10.5, num: 10, co: 10.5, note: 8.6, dates: 9,   role: 9.8,  bul: 9.2,  bulLh: 12.4, glab: 9.8,  gtxt: 9.3,  gLh: 12.6, line: 9.4,  lineLh: 12.8 },
+    sans:  { name: 21, title: 10.5, contact: 9,   sum: 10,   sumLh: 13.8, head: 10.5, num: 10, co: 10.5, note: 8.8, dates: 9.2, role: 10,   bul: 9.6,  bulLh: 12.9, glab: 9.8,  gtxt: 9.6,  gLh: 12.9, line: 9.6,  lineLh: 13 },
+    serif: { name: 20, title: 11,   contact: 9.8, sum: 10.8, sumLh: 14,   head: 11.5, num: 11, co: 11,   note: 9.6, dates: 10,  role: 10.8, bul: 10.6, bulLh: 13.6, glab: 10.8, gtxt: 10.6, gLh: 13.6, line: 10.6, lineLh: 13.6 }
+  };
+  async function makePdf(d, design){
+    const D = sanitizeDesign(design);
     const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter", compress: true });
-    let FACE = "courier";
-    if(f){ doc.addFileToVFS("JBM-Regular.ttf", f.r); doc.addFont("JBM-Regular.ttf", "JBM", "normal"); doc.addFileToVFS("JBM-Bold.ttf", f.b); doc.addFont("JBM-Bold.ttf", "JBM", "bold"); FACE = "JBM"; }
+    let face = D.font === "serif" ? "times" : D.font === "sans" ? "helvetica" : "mono", warn = "";
+    if(face === "mono" || !latinOk(JSON.stringify(d))){
+      const f = await fonts();
+      if(f){ doc.addFileToVFS("JBM-Regular.ttf", f.r); doc.addFont("JBM-Regular.ttf", "JBM", "normal"); doc.addFileToVFS("JBM-Bold.ttf", f.b); doc.addFont("JBM-Bold.ttf", "JBM", "bold"); if(face !== "mono") warn = "Some characters need a wider font, so this PDF uses JetBrains Mono"; face = "JBM"; }
+      else if(face === "mono") face = "courier";
+      else warn = "Some characters may not print correctly. Open the app from a web server so it can load its fonts";
+    }
+    const mono = face === "JBM" || face === "courier", Z = SIZES[mono ? "mono" : D.font];
     const who = titleCase(d.name || "");
     doc.setProperties({ title: (who ? who + " — " : "") + (d.title ? titleCase(d.title) : "Résumé"), author: who, subject: "Résumé", creator: "unmplyd" });
-    const INK = [20, 20, 20], MID = [51, 51, 49], MUTED = [94, 94, 91], BLUE = hexRgb(accent || "#003FCC"), RULE = [216, 216, 212];
-    const L = 40, R = 572, W = R - L, BOTTOM = 758; let y = 50;
-    const cw = (size) => size * 0.6; // JetBrains Mono and Courier both advance 600/1000 em
-    function font(bold, size, color){ doc.setFont(FACE, bold ? "bold" : "normal"); doc.setFontSize(size); doc.setTextColor(...color); }
-    function need(h){ if(y + h > BOTTOM){ doc.addPage(); y = 50; } }
-    function wrap(segs, maxChars){
-      const words = []; segs.forEach(s => String(s.t || "").split(/(\s+)/).forEach(t => { if(t) words.push({ t, b: !!s.b, c: s.c || MID }); }));
-      const lines = [[]]; let len = 0;
-      for(const w of words){
-        if(/^\s+$/.test(w.t)){ if(len && len + 1 <= maxChars){ lines[lines.length - 1].push({ t: " ", b: w.b, c: w.c }); len += 1; } continue; }
-        let t = w.t;
-        if(len && len + t.length > maxChars){ const c = lines[lines.length - 1]; if(c.length && c[c.length - 1].t === " ") c.pop(); lines.push([]); len = 0; }
-        while(t.length > maxChars){ lines[lines.length - 1].push({ t: t.slice(0, maxChars), b: w.b, c: w.c }); lines.push([]); t = t.slice(maxChars); }
-        lines[lines.length - 1].push({ t, b: w.b, c: w.c }); len += t.length;
+    const INK = [20, 20, 20], MID = [51, 51, 49], MUTED = [94, 94, 91], ACC = hexRgb(D.accent), RULE = [216, 216, 212];
+    const L = 40, R = 572, W = R - L, BOTTOM = 758, TOP = 50, center = D.nameAlign === "center"; let y = TOP;
+    const italicOk = face === "times" || face === "helvetica";
+    function font(bold, size, color, italic){ const it = italic && italicOk; doc.setFont(face, bold ? (it ? "bolditalic" : "bold") : (it ? "italic" : "normal")); doc.setFontSize(size); doc.setTextColor(...color); }
+    function tw(t, bold, size, italic){ font(bold, size, INK, italic); return doc.getTextWidth(t); }
+    function need(h){ if(y + h > BOTTOM){ doc.addPage(); y = TOP; } }
+    function wrap(segs, size, maxW){
+      const words = []; segs.forEach(s => String(s.t || "").split(/(\s+)/).forEach(t => { if(t) words.push({ t, b: !!s.b, c: s.c || MID, i: !!s.i }); }));
+      const lines = [[]]; let w = 0;
+      for(const wd of words){
+        const curL = lines[lines.length - 1];
+        if(/^\s+$/.test(wd.t)){ if(curL.length){ const sw = tw(" ", wd.b, size, wd.i); if(w + sw <= maxW){ curL.push({ t: " ", b: wd.b, c: wd.c, i: wd.i }); w += sw; } } continue; }
+        let t = wd.t, ww = tw(t, wd.b, size, wd.i);
+        if(curL.length && w + ww > maxW){ if(curL[curL.length - 1].t === " ") curL.pop(); lines.push([]); w = 0; }
+        while(ww > maxW && t.length > 1){ let n = t.length - 1; while(n > 1 && tw(t.slice(0, n), wd.b, size, wd.i) > maxW) n--; lines[lines.length - 1].push({ t: t.slice(0, n), b: wd.b, c: wd.c, i: wd.i }); lines.push([]); t = t.slice(n); ww = tw(t, wd.b, size, wd.i); w = 0; }
+        lines[lines.length - 1].push({ t, b: wd.b, c: wd.c, i: wd.i }); w += ww;
       }
-      return lines.map(line => line.reduce((acc, s) => { const p = acc[acc.length - 1]; if(p && p.b === s.b && p.c === s.c) p.t += s.t; else acc.push({ ...s }); return acc; }, []));
+      return lines.map(line => line.reduce((acc, s) => { const p = acc[acc.length - 1]; if(p && p.b === s.b && p.c === s.c && p.i === s.i) p.t += s.t; else acc.push({ ...s }); return acc; }, []));
     }
-    function drawLines(lines, x, size, lh){ for(const line of lines){ need(lh); let cx = x; for(const s of line){ font(s.b, size, s.c); doc.text(s.t, cx, y); cx += s.t.length * cw(size); } y += lh; } }
-    function centered(text, size, bold, color, cs){ font(bold, size, color); const w = text.length * cw(size) + Math.max(0, text.length - 1) * (cs || 0); doc.text(text, (612 - w) / 2, y, cs ? { charSpace: cs } : undefined); }
-    function centeredWrapped(text, size, bold, color, lh){ const lines = wrap([{ t: text, b: bold, c: color }], Math.floor(W / cw(size))); lines.forEach((ln, i) => { const t = ln.map(s => s.t).join(""); centered(t, size, bold, color); if(i < lines.length - 1) y += lh; }); }
-    function rightText(text, size, color){ font(false, size, color); doc.text(text, R - text.length * cw(size), y); }
-    function bulletList(arr, size, lh){
-      const x = L + 12, maxC = Math.floor((R - x) / cw(size));
+    function drawLines(lines, x, size, lh, centered){
+      for(const line of lines){
+        need(lh); let cx = x;
+        if(centered){ const lw = line.reduce((a, s) => a + tw(s.t, s.b, size, s.i), 0); cx = (612 - lw) / 2; }
+        for(const s of line){ font(s.b, size, s.c, s.i); doc.text(s.t, cx, y); cx += doc.getTextWidth(s.t); }
+        y += lh;
+      }
+    }
+    function rightText(text, size, color){ font(false, size, color); doc.text(text, R - doc.getTextWidth(text), y); }
+    function bulletList(arr){
+      const x = L + 12;
       for(const b of (arr || [])){
         if(!String(b).trim()) continue;
-        const lines = wrap([{ t: b, c: MID }], maxC);
-        need(lh * Math.min(lines.length, 2));
-        doc.setFillColor(...BLUE); doc.rect(L + 2, y - size * 0.36, 3, 3, "F");
-        drawLines(lines, x, size, lh); y += 2.5;
+        const lines = wrap([{ t: b, c: MID }], Z.bul, R - x);
+        need(Z.bulLh * Math.min(lines.length, 2));
+        doc.setFillColor(...ACC);
+        if(D.bullets === "round") doc.circle(L + 4, y - Z.bul * 0.32, 1.4, "F");
+        else if(D.bullets === "dash"){ font(false, Z.bul, ACC); doc.text("–", L + 1, y); }
+        else doc.rect(L + 2, y - Z.bul * 0.36, 3, 3, "F");
+        drawLines(lines, x, Z.bul, Z.bulLh); y += 2.5;
       }
     }
-    centered(d.name || "", 22, true, INK, 2); y += 10;
-    doc.setFillColor(...BLUE); doc.rect(306 - 45, y - 2, 90, 1.8, "F"); y += 18;
-    if(d.title){ centeredWrapped(d.title, 10, true, INK, 13); y += 15; }
-    if(d.contact){ centeredWrapped(d.contact, 9, false, MUTED, 12); y += 18; }
+    // header: optional logo, then name, bar, headline, contact
+    if(D.logo){
+      try { const p = doc.getImageProperties(D.logo); const h = Math.min(36, p.height), w = Math.min(170, p.width * h / p.height), hh = w * p.height / p.width;
+        doc.addImage(D.logo, D.logo.startsWith("data:image/jpeg") ? "JPEG" : "PNG", center ? (612 - w) / 2 : L, y - 14, w, hh); y += hh + 6; } catch(e){}
+    }
+    const nameText = D.nameCase === "upper" ? String(d.name || "").toUpperCase() : String(d.name || "");
+    const cs = D.nameSpacing === "wide" ? (mono ? 2 : 1.6) : 0;
+    font(true, Z.name, INK);
+    const nw = doc.getTextWidth(nameText) + Math.max(0, nameText.length - 1) * cs;
+    doc.text(nameText, center ? (612 - nw) / 2 : L, y, cs ? { charSpace: cs } : undefined); // the only letter-spaced text, so headings still extract cleanly
+    y += 10;
+    if(D.nameBar){ doc.setFillColor(...ACC); doc.rect(center ? 306 - 45 : L, y - 2, 90, 1.8, "F"); y += 18; } else y += 7;
+    if(d.title){ const t = D.nameCase === "upper" ? d.title.toUpperCase() : d.title; drawLines(wrap([{ t, b: mono, c: INK }], Z.title, W), L, Z.title, 13, center); y += 2; }
+    if(d.contact){ drawLines(wrap([{ t: d.contact, c: MUTED }], Z.contact, W), L, Z.contact, 12, center); y += 6; }
     if(d.summary && d.summary.trim()){
-      const lines = wrap([{ t: d.summary, c: MID }], Math.floor((W - 12) / cw(9.6))); const top = y - 10;
-      drawLines(lines, L + 12, 9.6, 13.2);
-      doc.setFillColor(...BLUE); doc.rect(L, top, 2.6, y - top - 6, "F"); y += 6;
+      if(D.summaryBar){ const top = y - 10; drawLines(wrap([{ t: d.summary, c: MID }], Z.sum, W - 12), L + 12, Z.sum, Z.sumLh); doc.setFillColor(...ACC); doc.rect(L, top, 2.6, y - top - 6, "F"); y += 6; }
+      else { drawLines(wrap([{ t: d.summary, c: MID }], Z.sum, W), L, Z.sum, Z.sumLh); y += 4; }
     }
     (d.sections || []).forEach((s, si) => {
       need(48); y += 8;
-      font(true, 10, BLUE); doc.text(String(si + 1).padStart(2, "0"), L, y);
-      const h = (s.heading || "").toUpperCase(); font(true, 10.5, INK); doc.text(h, L + 20, y);
-      const hw = h.length * cw(10.5); doc.setFillColor(...RULE); doc.rect(L + 20 + hw + 10, y - 3.5, Math.max(0, R - (L + 20 + hw + 10)), 0.6, "F");
-      y += 18;
+      const h = String(s.heading || "").toUpperCase();
+      if(D.headings === "numbered"){
+        font(true, Z.num, ACC); doc.text(String(si + 1).padStart(2, "0"), L, y);
+        const hx = L + (mono ? 20 : 19); font(true, Z.head, INK); doc.text(h, hx, y);
+        const hw = doc.getTextWidth(h); doc.setFillColor(...RULE); doc.rect(hx + hw + 10, y - 3.5, Math.max(0, R - (hx + hw + 10)), 0.6, "F"); y += 18;
+      } else if(D.headings === "rule"){ font(true, Z.head, ACC); doc.text(h, L, y); y += 4; doc.setFillColor(...ACC); doc.rect(L, y, W, 0.7, "F"); y += 14; }
+      else { font(true, Z.head, INK); doc.text(h, L, y); y += 16; }
       if(s.type === "experience") (s.entries || []).forEach((en) => {
         need(15 + 14 + 26);
-        font(true, 10.5, INK); const co = (en.company || "").toUpperCase(); doc.text(co, L, y);
-        if(en.note){ const nx = L + co.length * cw(10.5) + 9; font(false, 8.6, MUTED); if(nx + en.note.length * cw(8.6) < R - (en.dates || "").length * cw(9) - 8) doc.text(en.note, nx, y); }
-        if(en.dates) rightText(en.dates, 9, MUTED);
-        y += 15;
+        const co = D.companyCaps ? String(en.company || "").toUpperCase() : String(en.company || "");
+        const dw = en.dates ? tw(en.dates, false, Z.dates) : 0;
+        font(true, Z.co, INK); doc.text(co, L, y); const cw = doc.getTextWidth(co);
+        if(en.note){ const nx = L + cw + 8, nn = tw(en.note, false, Z.note, true); if(nx + nn < R - dw - 8){ font(false, Z.note, MUTED, true); doc.text(en.note, nx, y); } }
+        if(en.dates) rightText(en.dates, Z.dates, MUTED);
+        y += Z.co + 4.5;
         (en.roles || []).forEach((r) => {
-          need(14 + 13); font(false, 9.8, BLUE); doc.text(r.title || "", L, y); if(r.dates) rightText(r.dates, 9, MUTED); y += 13;
-          if(r.bullets && r.bullets.length) bulletList(r.bullets, 9.2, 12.4);
+          need(14 + 13); const rd = r.dates ? tw(r.dates, false, Z.dates) : 0;
+          if(r.dates) rightText(r.dates, Z.dates, MUTED);
+          drawLines(wrap([{ t: r.title || "", c: ACC, i: D.font === "serif" }], Z.role, W - rd - 12), L, Z.role, 13);
+          if(r.bullets && r.bullets.length) bulletList(r.bullets);
         });
-        if(en.italic){ drawLines(wrap([{ t: en.italic, c: MUTED }], Math.floor(W / cw(9))), L, 9, 12.5); y += 2; }
-        bulletList(en.bullets, 9.2, 12.4);
+        if(en.italic){ drawLines(wrap([{ t: en.italic, c: MUTED, i: true }], Z.dates, W), L, Z.dates, 12.5); y += 2; }
+        bulletList(en.bullets);
         if(en.clients && en.clients.length){
-          if(en.clientsHeading){ need(40); y += 3; font(true, 8.8, MUTED); doc.text(en.clientsHeading.toUpperCase(), L, y); y += 13; }
-          en.clients.forEach((c) => { need(13 + 26); drawLines(wrap([{ t: c.name, b: true, c: INK }, { t: c.desc ? ", " + c.desc : "", c: MID }], Math.floor(W / cw(9.4))), L, 9.4, 12.8); bulletList(c.bullets, 9.2, 12.4); });
+          if(en.clientsHeading){ need(40); y += 3; font(true, Z.note, MUTED); doc.text(en.clientsHeading.toUpperCase(), L, y); y += 13; }
+          en.clients.forEach((c) => { need(13 + 26); drawLines(wrap([{ t: c.name, b: true, c: INK }, { t: c.desc ? ", " + c.desc : "", c: MID }], Z.line, W), L, Z.line, Z.lineLh); bulletList(c.bullets); });
         }
         y += 5;
       });
       if(s.type === "groups") (s.groups || []).forEach((g) => {
-        need(28); font(true, 9.8, INK); doc.text(g.label || "", L, y); y += 13;
-        drawLines(wrap([{ t: g.text, c: MID }], Math.floor(W / cw(9.3))), L, 9.3, 12.6); y += 6;
+        if(D.skills === "stacked"){ need(28); font(true, Z.glab, INK); doc.text(g.label || "", L, y); y += 13; drawLines(wrap([{ t: g.text, c: MID }], Z.gtxt, W), L, Z.gtxt, Z.gLh); y += 6; }
+        else { drawLines(wrap([{ t: (g.label || "") + ": ", b: true, c: INK }, { t: g.text, c: MID }], Z.gtxt, W), L, Z.gtxt, Z.gLh); y += 3; }
       });
-      if(s.type === "lines") (s.lines || []).forEach((l) => { drawLines(wrap([{ t: l.bold, b: true, c: INK }, { t: l.text ? " — " + l.text : "", c: MID }], Math.floor(W / cw(9.4))), L, 9.4, 12.8); y += 4; });
+      if(s.type === "lines") (s.lines || []).forEach((l) => { drawLines(wrap([{ t: l.bold, b: true, c: INK }, { t: l.text ? " — " + l.text : "", c: MID }], Z.line, W), L, Z.line, Z.lineLh); y += 4; });
     });
-    return doc;
+    return { doc, warn };
   }
   async function downloadPdf(r){
     if(!r) return;
@@ -859,7 +1078,7 @@ form.ed .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
     if(pending) flush();
     const d = E.preview && r.id === E.id ? E.preview.data : r.data;
     status("Building PDF…");
-    try { const doc = await makePdf(d, r.accent); saveFile(fileSafe(titleCase(d.name)) + "_Resume_" + fileSafe(r.title) + ".pdf", doc.output("blob")); status("All changes saved"); }
+    try { const { doc, warn } = await makePdf(d, r.design); saveFile(fileSafe(titleCase(d.name)) + "_Resume_" + fileSafe(r.title) + ".pdf", doc.output("blob")); status("All changes saved"); if(warn) toast(warn); }
     catch(e){ status(""); toast("Couldn't build the PDF"); }
   }
   $("pdfBtn").addEventListener("click", () => downloadPdf(cur()));

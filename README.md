@@ -2,7 +2,7 @@
 
 **Bespoke résumés you can edit on the page, and keep track of.**
 
-unmplyd is a single HTML file. Your résumé appears as a designed page: click any text to change it, and download a clean PDF when you're done. Keep one résumé for each kind of role, make tailored copies, and keep every version, so you always know which one is current and can go back to an older one.
+unmplyd is a single HTML file. Your résumé appears as a designed page, styled after your own original résumé: click any text to change it, and download a clean PDF when you're done. Keep one résumé for each kind of role, make tailored copies, and keep every version, so you always know which one is current and can go back to an older one.
 
 ![The résumé library](docs/screenshot.png)
 
@@ -12,12 +12,15 @@ unmplyd is a single HTML file. Your résumé appears as a designed page: click a
 - **Edit layout** adds or removes jobs, roles, bullets and sections, and moves them up or down.
 - **A résumé library.** Current résumés sit up top, one for each kind of role. Drafts and older versions are folded underneath. Duplicate one to make a tailored copy, and use Details to name it, say what it's for, set its status and add notes.
 - **Version history** for every résumé. Save a version whenever you like. A version is also saved automatically before any AI edit, restore, or removal of a section or job. Preview any version and restore it in one click.
-- **Accent colors**, so each résumé can have its own look.
-- **Clean PDFs** in JetBrains Mono that applicant-tracking systems read correctly.
+- **Your design, standardized.** Upload your original résumé, and its fonts, colors, name treatment and logo are mapped onto a fixed set of design options, so every résumé keeps its own look on screen and in the PDF. Fine-tune any of it in **Design**.
+- **Presets:** *unmplyd* (JetBrains Mono, numbered sections, a blue accent) and *Corpo slop* (Times New Roman, all black, plain), for applications where any design at all is a risk.
+- **Clean PDFs** that applicant-tracking systems read correctly, in JetBrains Mono, Helvetica or Times New Roman to match the design.
 - **AI edits with any assistant.** No account or API key needed (see below).
 - **Private.** Everything is saved in your browser. Export a backup file whenever you like.
 
 ![The editor](docs/editor.png)
+
+![The Design panel, with the Corpo slop preset](docs/design.png)
 
 ## Get started
 
@@ -34,7 +37,7 @@ python3 -m http.server 8000
 
 **Or host your own copy.** Fork the repo and turn on GitHub Pages (Settings → Pages → Deploy from branch → `main`). Your data still stays in your own browser.
 
-To add your résumé, click **+ New résumé**, choose *Text I paste in*, and paste your current résumé. The next step turns it into an editable, designed page, using any AI assistant.
+To add your résumé, click **+ New résumé**, choose *Text I paste in*, and paste your current résumé. The next step turns it into an editable page, using any AI assistant. Attach your original résumé file (PDF, Word or a screenshot) in that AI chat as well, and the design is matched to your original. Already imported? Use **Design → Match my original**.
 
 ## Editing with AI
 
@@ -44,13 +47,13 @@ unmplyd isn't tied to any AI model or company. It works by copy and paste:
 2. Click **Copy prompt** and paste it into whatever AI assistant you use, such as Claude.
 3. Paste its whole reply back in and click **Review changes**.
 
-You see every change, old next to new, before anything is applied. The prompt tells the assistant never to invent employers, titles, dates, numbers or results. The review flags any reply that changes a company name, date or job title anyway. Applying saves the previous version to History first.
+The same copy-and-paste loop imports a résumé from text and matches a design to your original file. You see every change, old next to new (or a preview of the new design), before anything is applied. The prompt tells the assistant never to invent employers, titles, dates, numbers or results. The review flags any reply that changes a company name, date or job title anyway. Applying saves the previous version to History first.
 
 ## Rebuild it with an AI agent: SKILL.md
 
 [`SKILL.md`](SKILL.md) describes unmplyd completely: the résumé format, the design, the editing behavior, version tracking and PDF export. An AI agent can use it to:
 
-- convert someone's résumé into an import file for this app,
+- read someone's original résumé, content and design, into an import file for this app,
 - rebuild the whole tool from scratch without this repository, or
 - make designed résumé files and keep versions in plain folders.
 
@@ -67,7 +70,7 @@ Put it in your agent's skills folder (as `unmplyd/SKILL.md`), or paste it into a
 ```js
 {
   "app": "unmplyd", "version": 2,
-  "resumes":  [ { "id", "title", "target", "status": "current" | "draft" | "older", "notes", "accent": "#003FCC", "data": Résumé, "savedAt", "created" } ],
+  "resumes":  [ { "id", "title", "target", "status": "current" | "draft" | "older", "notes", "design": Design, "data": Résumé, "savedAt", "created" } ],
   "versions": [ { "id", "resumeId", "data": Résumé, "at", "note" } ]
 }
 ```
@@ -80,14 +83,26 @@ A `Résumé` is `{ name, title, contact, summary, sections }`, with three kinds 
 { "type": "lines",      "heading": "EDUCATION",    "lines":   [ { "bold", "text" } ] }
 ```
 
-See [`examples/example-backup.json`](examples/example-backup.json) for a full example.
+A `Design` is the standardized look:
+
+```js
+{ "preset": "unmplyd" | "corpo" | "original" | "custom",
+  "font": "mono" | "sans" | "serif", "accent": "#RRGGBB",
+  "nameCase": "upper" | "asis", "nameAlign": "center" | "left", "nameSpacing": "wide" | "normal", "nameBar": true,
+  "headings": "numbered" | "rule" | "plain", "bullets": "square" | "round" | "dash",
+  "summaryBar": true, "companyCaps": true, "skills": "stacked" | "inline",
+  "logo": "data:image/png;base64,…",   // optional
+  "fontsSeen": "Garamond, Calibri" }     // optional, what the original used
+```
+
+See [`examples/example-backup.json`](examples/example-backup.json) for a full example. Backups from before designs existed (with a plain `accent`) still import.
 
 ## Project layout
 
 ```
 index.html                  the whole app: HTML, CSS and JavaScript in one file
 SKILL.md                    the full spec, for AI agents
-fonts/                      JetBrains Mono, embedded in PDFs
+fonts/                      JetBrains Mono, embedded in Mono-style PDFs
 examples/                   the example data, as an importable backup
 scripts/build_example.py    rebuilds the example data and embeds it in index.html
 docs/                       screenshots
